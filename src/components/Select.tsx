@@ -1,0 +1,73 @@
+import { FC, PropsWithChildren } from "react";
+import * as RadixSelect from "@radix-ui/react-select";
+
+export interface SelectProps extends PropsWithChildren {
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+}
+
+export const Select: FC<SelectProps> = ({
+  children,
+  defaultValue,
+  onValueChange,
+}) => {
+  return (
+    <RadixSelect.Root defaultValue={defaultValue} onValueChange={onValueChange}>
+      {children}
+    </RadixSelect.Root>
+  );
+};
+
+export const SelectTrigger: FC = () => {
+  return (
+    <RadixSelect.Trigger className="text-sm text-light-70 hover:text-white hover:bg-[#262829] inline-flex gap-1.5 items-center py-1 pl-3 pr-1 rounded transition-colors focus:outline-none whitespace-nowrap">
+      <RadixSelect.Value className="truncate"></RadixSelect.Value>
+      <RadixSelect.Icon>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-5 h-5"
+        >
+          <path
+            d="M9.99998 12.2083L6.33331 8.54166H13.6666L9.99998 12.2083Z"
+            fill="#F3F6F8"
+            fillOpacity="0.6"
+          />
+        </svg>
+      </RadixSelect.Icon>
+    </RadixSelect.Trigger>
+  );
+};
+
+export const SelectContent: FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <RadixSelect.Portal>
+      <RadixSelect.Content
+        className="bg-[#151617] text-light/75 text-sm border border-zinc-800 rounded-md shadow-md font-sans"
+        position="popper"
+      >
+        <RadixSelect.Viewport className="p-2 space-y-2">
+          {children}
+        </RadixSelect.Viewport>
+      </RadixSelect.Content>
+    </RadixSelect.Portal>
+  );
+};
+
+export interface SelectItemProps extends PropsWithChildren {
+  value: string;
+}
+
+export const SelectItem: FC<SelectItemProps> = ({ children, value }) => {
+  return (
+    <RadixSelect.Item
+      className="px-3 py-2 min-w-[100px] rounded-md hover:bg-[#262829] transition-colors cursor-pointer focus:outline-none"
+      value={value}
+    >
+      <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
+    </RadixSelect.Item>
+  );
+};
