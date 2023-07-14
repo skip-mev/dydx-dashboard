@@ -146,6 +146,8 @@ function ValidatorPage() {
                           fontSize: 13,
                           opacity: 0.8,
                         }}
+                        minTickGap={50}
+                        interval="preserveStartEnd"
                       />
                       <YAxis
                         axisLine={false}
@@ -201,6 +203,8 @@ function ValidatorPage() {
                           fontSize: 13,
                           opacity: 0.8,
                         }}
+                        minTickGap={50}
+                        interval="preserveStartEnd"
                       />
                       <YAxis
                         axisLine={false}
