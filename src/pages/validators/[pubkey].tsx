@@ -116,114 +116,120 @@ function ValidatorPage() {
           {validator && validator.moniker}
         </h1>
       </div>
-      <div className="space-y-12 pb-12">
-        <div>
-          <div className="pb-4">
-            <p className="font-mono font-bold text-xl">
-              Normalized Orderbook Discrepancy
-            </p>
-          </div>
-          <Card className="p-9 pl-4 py-8">
-            <div className="relative">
-              <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
-                Orderbook Discrepancy (bps)
-              </div>
-              {validatorMEV && (
-                <ResponsiveContainer width="100%" height={296}>
-                  <LineChart
-                    data={datapoints}
-                    margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
-                  >
-                    <XAxis
-                      dataKey="key"
-                      axisLine={false}
-                      tickLine={false}
-                      offset={50}
-                      style={{
-                        fill: "#fff",
-                        fontFamily: "monospace",
-                        fontSize: 13,
-                        opacity: 0.8,
-                      }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      padding={{ top: 20, bottom: 20 }}
-                      style={{
-                        fill: "#fff",
-                        fontFamily: "monospace",
-                        fontSize: 13,
-                        opacity: 0.8,
-                      }}
-                    />
-                    <Line
-                      dot={false}
-                      dataKey="value"
-                      stroke="#8884d8"
-                      isAnimationActive={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
-              <p className="font-mono text-center pt-4">Past Proposed Blocks</p>
+      {validatorMEV && rawMEV && (
+        <div className="space-y-12 pb-12">
+          <div>
+            <div className="pb-4">
+              <p className="font-mono font-bold text-xl">
+                Normalized Orderbook Discrepancy
+              </p>
             </div>
-          </Card>
-        </div>
-        <div>
-          <div className="pb-4">
-            <p className="font-mono font-bold text-xl">
-              Cumulative Orderbook Discrepancy
-            </p>
-          </div>
-          <Card className="p-9 pl-4 py-8">
-            <div className="relative">
-              <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[120px] font-mono">
-                Cumulative Orderbook Discrepancy ($)
+            <Card className="p-9 pl-4 py-8">
+              <div className="relative">
+                <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
+                  Orderbook Discrepancy (bps)
+                </div>
+                {validatorMEV && (
+                  <ResponsiveContainer width="100%" height={296}>
+                    <LineChart
+                      data={datapoints}
+                      margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                    >
+                      <XAxis
+                        dataKey="key"
+                        axisLine={false}
+                        tickLine={false}
+                        offset={50}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        padding={{ top: 20, bottom: 20 }}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                      />
+                      <Line
+                        dot={false}
+                        dataKey="value"
+                        stroke="#8884d8"
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+                <p className="font-mono text-center pt-4">
+                  Past Proposed Blocks
+                </p>
               </div>
-              {validatorMEV && (
-                <ResponsiveContainer width="100%" height={296}>
-                  <LineChart
-                    data={rawMEVDatapoints}
-                    margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
-                  >
-                    <XAxis
-                      dataKey="key"
-                      axisLine={false}
-                      tickLine={false}
-                      offset={50}
-                      style={{
-                        fill: "#fff",
-                        fontFamily: "monospace",
-                        fontSize: 13,
-                        opacity: 0.8,
-                      }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      padding={{ top: 20, bottom: 20 }}
-                      style={{
-                        fill: "#fff",
-                        fontFamily: "monospace",
-                        fontSize: 13,
-                        opacity: 0.8,
-                      }}
-                    />
-                    <Line
-                      dot={false}
-                      dataKey="value"
-                      stroke="#8884d8"
-                      isAnimationActive={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
-              <p className="font-mono text-center pt-4">Past Proposed Blocks</p>
+            </Card>
+          </div>
+          <div>
+            <div className="pb-4">
+              <p className="font-mono font-bold text-xl">
+                Cumulative Orderbook Discrepancy
+              </p>
             </div>
-          </Card>
+            <Card className="p-9 pl-4 py-8">
+              <div className="relative">
+                <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[120px] font-mono">
+                  Cumulative Orderbook Discrepancy ($)
+                </div>
+                {validatorMEV && (
+                  <ResponsiveContainer width="100%" height={296}>
+                    <LineChart
+                      data={rawMEVDatapoints}
+                      margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                    >
+                      <XAxis
+                        dataKey="key"
+                        axisLine={false}
+                        tickLine={false}
+                        offset={50}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        padding={{ top: 20, bottom: 20 }}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                      />
+                      <Line
+                        dot={false}
+                        dataKey="value"
+                        stroke="#8884d8"
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+                <p className="font-mono text-center pt-4">
+                  Past Proposed Blocks
+                </p>
+              </div>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }
