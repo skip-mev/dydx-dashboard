@@ -21,9 +21,8 @@ import {
 import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export default function Home() {
+  const [searchValue, setSearchValue] = useState<string>("");
   const [blocks, setBlocks] = useState(43200);
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
@@ -37,6 +36,25 @@ export default function Home() {
       return acc + parseFloat(ethers.formatUnits(validator.stake, 6));
     }, 0);
   }, [validators]);
+
+  const sortedValidators = useMemo(() => {
+    if (!validators) {
+      return undefined;
+    }
+
+    return [...validators]
+      .sort((a, b) => {
+        const aStake = parseFloat(ethers.formatUnits(a.stake, 6));
+        const bStake = parseFloat(ethers.formatUnits(b.stake, 6));
+
+        return bStake - aStake;
+      })
+      .filter((validator) => {
+        return validator.moniker
+          .toLowerCase()
+          .includes(searchValue.toLowerCase());
+      });
+  }, [searchValue, validators]);
 
   return (
     <Layout>
@@ -71,6 +89,8 @@ export default function Home() {
               </svg>
             )}
             placeholder="Filter validators"
+            value={searchValue}
+            onChange={(value) => setSearchValue(value)}
           />
           <div className="w-[100px] flex justify-end">
             <Select
@@ -109,7 +129,7 @@ export default function Home() {
               <TableHead align="right">Stake Weight %</TableHead>
             </TableHeader>
             <TableBody>
-              {!validators &&
+              {!sortedValidators &&
                 Array.from({ length: 20 }).map((_, index) => (
                   <TableRow key={index}>
                     <TableCell className="w-[400px]">
@@ -126,8 +146,8 @@ export default function Home() {
                     </TableCell>
                   </TableRow>
                 ))}
-              {validators &&
-                validators.map((validator) => {
+              {sortedValidators &&
+                sortedValidators.map((validator) => {
                   const stake = parseFloat(
                     ethers.formatUnits(validator.stake, 6)
                   );
