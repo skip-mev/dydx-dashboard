@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const API_URL = "http://localhost:8080";
+// const API_URL = "http://localhost:8080";
+const API_URL = "https://dydx-mev-api-dev.skip.money";
 
 export interface Validator {
   moniker: string;
@@ -91,7 +92,10 @@ export function useValidatorsWithStatsQuery(blocks: number) {
 
       const toHeight = await getLatestHeight();
 
-      const fromHeight = toHeight - blocks;
+      let fromHeight = toHeight - blocks;
+      if (fromHeight < 0) {
+        fromHeight = 1;
+      }
 
       const statPromises = validators.map((validator) =>
         getValidatorStats(validator.pubkey, fromHeight, toHeight)

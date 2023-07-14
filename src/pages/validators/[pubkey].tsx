@@ -5,6 +5,7 @@ import {
 } from "@/api";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
+import { ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -66,7 +67,7 @@ function ValidatorPage() {
     }
 
     const values = [...rawMEV].reverse().map((datapoint, index) => {
-      return datapoint.value;
+      return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
     return values.map((_, index) => {
@@ -78,8 +79,6 @@ function ValidatorPage() {
       };
     });
   }, [rawMEV]);
-
-  console.log(rawMEVDatapoints);
 
   return (
     <Layout>
@@ -117,7 +116,7 @@ function ValidatorPage() {
           {validator && validator.moniker}
         </h1>
       </div>
-      <div className="space-y-12">
+      <div className="space-y-12 pb-12">
         <div>
           <div className="pb-4">
             <p className="font-mono font-bold text-xl">
