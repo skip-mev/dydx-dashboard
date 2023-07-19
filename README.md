@@ -5,8 +5,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, ensure you have a `.env.development.local` file with the following environment variables:
 
 * `NEXT_PUBLIC_API_URL`: Root URL of the dYdX MEV API server the frontend will query. The two acceptable values are: 
-    * `https://dydx-mev-api-prod.skip.money/v1`: The stable, production API server
-    * `https://dydx-mev-api-dev.skip.money/v1`: The nightly, unstable dev server used for testing and previewing new functionality
+    * `https://dydx-mev-api-prod.skip.money`: The stable, production API server
+    * `https://dydx-mev-api-dev.skip.money`: The nightly, unstable dev server used for testing and previewing new functionality
 (An example has been included in the repo under example.env). You *MUST* copy this to `env.development.local`. Internally, we use `env.development.local` to develop against the nightly API and `env.production.local` to develop against the stable one. 
 
 ## Develop
