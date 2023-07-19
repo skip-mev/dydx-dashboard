@@ -2,7 +2,16 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, ensure you have a `.env.development.local` file with the following environment variables:
+
+* `NEXT_PUBLIC_API_URL`: Root URL of the dYdX MEV API server the frontend will query. The two acceptable values are: 
+    * `https://dydx-mev-api-prod.skip.money/v1`: The stable, production API server
+    * `https://dydx-mev-api-dev.skip.money/v1`: The nightly, unstable dev server used for testing and previewing new functionality
+(An example has been included in the repo under example.env). You *MUST* copy this to `env.development.local`. Internally, we use `env.development.local` to develop against the nightly API and `env.production.local` to develop against the stable one. 
+
+## Develop
+
+Run the development server:
 
 ```bash
 npm run dev
@@ -14,13 +23,19 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+## Build and Run
+
+```bash
+npm run build && npm run start
+# or
+yarn build && yarn start
+# or 
+pnpm build && pnpm start
+```
 
 ## Learn More
 
