@@ -209,24 +209,15 @@ export function useRawMEVQuery(proposer: string, blocks: number) {
   });
 }
 
-export function useCumulativeNormalizedMEVQuery(blocks: number) {
+export function useCumulativeNormalizedMEVQuery() {
   return useQuery({
-    queryKey: ["cumulative-normalized-mev", blocks],
+    queryKey: ["cumulative-normalized-mev"],
     queryFn: async () => {
-      const toHeight = await getLatestHeight();
-
-      let fromHeight = toHeight - blocks;
-      if (fromHeight < 0) {
-        fromHeight = 1;
-      }
-
       const validators = await getValidators();
 
       const normalizedMEVPromises = validators.map((validator) =>
         getNormalizedMEV({
           proposer: validator.pubkey,
-          from: fromHeight,
-          to: toHeight,
           limit: 1000,
         })
       );
