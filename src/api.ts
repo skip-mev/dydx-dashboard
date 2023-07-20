@@ -241,7 +241,7 @@ export function cumulativeDatapoints(datapoints: Datapoint[]) {
     return {
       key: reversedValues.length - index,
       value: reversedValues.slice(0, index + 1).reduce((acc, value) => {
-        return acc + value.value;
+        return acc + value.value * 10000;
       }, 0),
     };
   });

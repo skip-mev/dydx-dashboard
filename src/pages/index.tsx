@@ -204,7 +204,7 @@ export default function Home() {
               {chartData.length === 0 && <div className="h-[300px] w-full" />}
               {chartData.length > 0 && (
                 <Fragment>
-                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[105px] font-mono text-xs">
+                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[115px] font-mono text-xs">
                     Cumulative Order Book Discrepancy (bps)
                   </div>
                   <ResponsiveContainer width="100%" height={300}>
