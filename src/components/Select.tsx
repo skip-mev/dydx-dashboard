@@ -4,23 +4,38 @@ import * as RadixSelect from "@radix-ui/react-select";
 export interface SelectProps extends PropsWithChildren {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  onOpenChange?: (open: boolean) => void;
+  value?: string;
 }
 
 export const Select: FC<SelectProps> = ({
   children,
   defaultValue,
   onValueChange,
+  onOpenChange,
+  value,
 }) => {
   return (
-    <RadixSelect.Root defaultValue={defaultValue} onValueChange={onValueChange}>
+    <RadixSelect.Root
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      onOpenChange={onOpenChange}
+      value={value}
+    >
       {children}
     </RadixSelect.Root>
   );
 };
 
-export const SelectTrigger: FC = () => {
+interface SelectTriggerProps {
+  className?: string;
+}
+
+export const SelectTrigger: FC<SelectTriggerProps> = ({ className }) => {
   return (
-    <RadixSelect.Trigger className="text-sm text-light-70 hover:text-white hover:bg-[#262829] inline-flex gap-1.5 items-center py-1 pl-3 pr-1 rounded transition-colors focus:outline-none whitespace-nowrap">
+    <RadixSelect.Trigger
+      className={`text-sm text-light-70 hover:text-white hover:bg-[#262829] inline-flex gap-1.5 items-center justify-between py-1 pl-3 pr-1 rounded transition-colors focus:outline-none whitespace-nowrap ${className}`}
+    >
       <RadixSelect.Value className="truncate"></RadixSelect.Value>
       <RadixSelect.Icon>
         <svg
@@ -46,7 +61,7 @@ export const SelectContent: FC<PropsWithChildren> = ({ children }) => {
   return (
     <RadixSelect.Portal>
       <RadixSelect.Content
-        className="bg-[#151617] text-light/75 text-sm border border-zinc-800 rounded-md shadow-md font-sans"
+        className="bg-[#151617] text-light/75 text-sm border border-zinc-800 rounded-md shadow-md font-sans max-h-64 overflow-y-auto z-50 mt-1"
         position="popper"
       >
         <RadixSelect.Viewport className="p-2 space-y-2">
@@ -59,13 +74,19 @@ export const SelectContent: FC<PropsWithChildren> = ({ children }) => {
 
 export interface SelectItemProps extends PropsWithChildren {
   value: string;
+  onMouseOver?: () => void;
 }
 
-export const SelectItem: FC<SelectItemProps> = ({ children, value }) => {
+export const SelectItem: FC<SelectItemProps> = ({
+  children,
+  value,
+  onMouseOver,
+}) => {
   return (
     <RadixSelect.Item
       className="px-3 py-2 min-w-[100px] rounded-md hover:bg-[#262829] transition-colors cursor-pointer focus:outline-none"
       value={value}
+      onMouseOver={onMouseOver}
     >
       <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
     </RadixSelect.Item>

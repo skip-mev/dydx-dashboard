@@ -41,7 +41,10 @@ function ValidatorPage() {
     return validators.find((validator) => validator.pubkey === pubkey);
   }, [validators, pubkey]);
 
-  const { data: validatorMEV } = useNormalizedMEVQuery(validator?.pubkey || "");
+  const { data: validatorMEV } = useNormalizedMEVQuery(
+    validator?.pubkey || "",
+    43200
+  );
 
   const datapoints = useMemo(() => {
     if (!validatorMEV) {
@@ -59,7 +62,7 @@ function ValidatorPage() {
       .reverse();
   }, [validatorMEV]);
 
-  const { data: rawMEV } = useRawMEVQuery(validator?.pubkey || "");
+  const { data: rawMEV } = useRawMEVQuery(validator?.pubkey || "", 43200);
 
   const rawMEVDatapoints = useMemo(() => {
     if (!rawMEV) {

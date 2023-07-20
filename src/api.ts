@@ -24,7 +24,7 @@ export async function getValidators() {
 }
 
 export async function getLatestHeight() {
-  const response = await axios.get(`${API_URL}/v1/raw_mev`);
+  const response = await axios.get(`${API_URL}/v1/raw_mev?limit=1`);
 
   return parseInt(response.data.datapoints[0].block.height);
 }
@@ -69,13 +69,14 @@ interface Datapoint {
   block: Block;
 }
 
-interface NormalizedMEVRequest {
+interface DatapointRequest {
   proposer?: string;
   from?: number;
   to?: number;
+  limit?: number;
 }
 
-export async function getNormalizedMEV(params: NormalizedMEVRequest) {
+export async function getNormalizedMEV(params: DatapointRequest) {
   const query = new URLSearchParams();
 
   if (params.proposer) {
@@ -90,6 +91,10 @@ export async function getNormalizedMEV(params: NormalizedMEVRequest) {
     query.append("to_height", params.to.toString());
   }
 
+  if (params.limit) {
+    query.append("limit", params.limit.toString());
+  }
+
   const response = await axios.get(
     `${API_URL}/v1/normalized_mev?${query.toString()}`
   );
@@ -97,10 +102,26 @@ export async function getNormalizedMEV(params: NormalizedMEVRequest) {
   return response.data.datapoints as Datapoint[];
 }
 
-export async function getRawMEV(proposer: string) {
-  const response = await axios.get(
-    `${API_URL}/v1/raw_mev?proposer=${proposer}`
-  );
+export async function getRawMEV(params: DatapointRequest) {
+  const query = new URLSearchParams();
+
+  if (params.proposer) {
+    query.append("proposer", params.proposer);
+  }
+
+  if (params.from) {
+    query.append("from_height", params.from.toString());
+  }
+
+  if (params.to) {
+    query.append("to_height", params.to.toString());
+  }
+
+  if (params.limit) {
+    query.append("limit", params.limit.toString());
+  }
+
+  const response = await axios.get(`${API_URL}/v1/raw_mev?${query.toString()}`);
 
   return response.data.datapoints as Datapoint[];
 }
@@ -144,23 +165,45 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useNormalizedMEVQuery(proposer: string) {
+export function useNormalizedMEVQuery(proposer: string, blocks: number) {
   return useQuery({
-    queryKey: ["normalized-mev", proposer],
+    queryKey: ["normalized-mev", proposer, blocks],
     queryFn: async () => {
+      const toHeight = await getLatestHeight();
+
+      let fromHeight = toHeight - blocks;
+      if (fromHeight < 0) {
+        fromHeight = 1;
+      }
+
       return getNormalizedMEV({
         proposer,
+        from: fromHeight,
+        to: toHeight,
+        limit: 1000,
       });
     },
     enabled: proposer !== "",
   });
 }
 
-export function useRawMEVQuery(proposer: string) {
+export function useRawMEVQuery(proposer: string, blocks: number) {
   return useQuery({
-    queryKey: ["raw-mev", proposer],
+    queryKey: ["raw-mev", proposer, blocks],
     queryFn: async () => {
-      return getRawMEV(proposer);
+      const toHeight = await getLatestHeight();
+
+      let fromHeight = toHeight - blocks;
+      if (fromHeight < 0) {
+        fromHeight = 1;
+      }
+
+      return getRawMEV({
+        proposer,
+        from: fromHeight,
+        to: toHeight,
+        limit: 1000,
+      });
     },
     enabled: proposer !== "",
   });
@@ -168,9 +211,6 @@ export function useRawMEVQuery(proposer: string) {
 
 export function useCumulativeNormalizedMEVQuery(blocks: number) {
   return useQuery({
-    onSuccess: () => {
-      alert("cumulative normalized mev query success");
-    },
     queryKey: ["cumulative-normalized-mev", blocks],
     queryFn: async () => {
       const toHeight = await getLatestHeight();
@@ -187,6 +227,7 @@ export function useCumulativeNormalizedMEVQuery(blocks: number) {
           proposer: validator.pubkey,
           from: fromHeight,
           to: toHeight,
+          limit: 1000,
         })
       );
 
