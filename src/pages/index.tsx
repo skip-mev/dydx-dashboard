@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
 import {
@@ -199,69 +199,82 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <Card className="p-6 pr-4">
+          <Card
+            className={`p-6 pr-4 ${
+              chartData.length === 0 ? "animate-pulse" : null
+            }`}
+          >
             <div className="relative">
-              <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[105px] font-mono text-xs">
-                Cumulative Order Book Discrepancy (bps)
-              </div>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart
-                  data={chartData}
-                  margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                >
-                  <XAxis
-                    dataKey="key"
-                    axisLine={false}
-                    tickLine={false}
-                    style={{
-                      fill: "#fff",
-                      fontFamily: "monospace",
-                      fontSize: 13,
-                      opacity: 0.8,
-                    }}
-                    minTickGap={50}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    padding={{ top: 20, bottom: 20 }}
-                    style={{
-                      fill: "#fff",
-                      fontFamily: "monospace",
-                      fontSize: 13,
-                      opacity: 0.8,
-                    }}
-                  />
-                  {validators &&
-                    validators.map((validator) => {
-                      return (
-                        <Line
-                          key={validator.pubkey}
-                          dot={false}
-                          dataKey={validator.moniker}
-                          stroke={
-                            validator.moniker === selectedValidator?.moniker ||
-                            validator.moniker === highlightedValidator?.moniker
-                              ? "#34F3FF"
-                              : "#8884d8"
-                          }
-                          isAnimationActive={false}
-                          opacity={
-                            validator.moniker === selectedValidator?.moniker ||
-                            validator.moniker === highlightedValidator?.moniker
-                              ? 1
-                              : 0.3
-                          }
-                          onClick={() => setSelectedValidator(validator)}
-                        ></Line>
-                      );
-                    })}
-                </LineChart>
-              </ResponsiveContainer>
-              <p className="font-mono text-center text-sm pt-4">
-                Past Proposed Blocks
-              </p>
+              {chartData.length === 0 && <div className="h-[300px] w-full" />}
+              {chartData.length > 0 && (
+                <Fragment>
+                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[105px] font-mono text-xs">
+                    Cumulative Order Book Discrepancy (bps)
+                  </div>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart
+                      data={chartData}
+                      margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                    >
+                      <XAxis
+                        dataKey="key"
+                        axisLine={false}
+                        tickLine={false}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                        minTickGap={50}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        padding={{ top: 20, bottom: 20 }}
+                        style={{
+                          fill: "#fff",
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          opacity: 0.8,
+                        }}
+                      />
+                      {validators &&
+                        validators.map((validator) => {
+                          return (
+                            <Line
+                              key={validator.pubkey}
+                              dot={false}
+                              dataKey={validator.moniker}
+                              stroke={
+                                validator.moniker ===
+                                  selectedValidator?.moniker ||
+                                validator.moniker ===
+                                  highlightedValidator?.moniker
+                                  ? "#34F3FF"
+                                  : "#8884d8"
+                              }
+                              isAnimationActive={false}
+                              opacity={
+                                validator.moniker ===
+                                  selectedValidator?.moniker ||
+                                validator.moniker ===
+                                  highlightedValidator?.moniker
+                                  ? 1
+                                  : 0.3
+                              }
+                              onClick={() => setSelectedValidator(validator)}
+                            ></Line>
+                          );
+                        })}
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <p className="font-mono text-center text-sm pt-4">
+                    Past Proposed Blocks
+                  </p>
+                </Fragment>
+              )}
             </div>
           </Card>
         </div>
