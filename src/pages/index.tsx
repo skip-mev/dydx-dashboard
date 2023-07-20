@@ -32,6 +32,7 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
+  Tooltip as ChartTooltip,
 } from "recharts";
 
 function leftPadArray(array: number[], length: number) {
@@ -46,6 +47,7 @@ function leftPadArray(array: number[], length: number) {
   return a.concat(array);
 }
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { setServers } from "dns";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -54,16 +56,15 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("stake");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  const [selectedValidator, setSelectedValidator] = useState<
+  const [selectedValidators, setSelectedValidators] = useState<
     | {
         averageMev: string;
         averageNormalizedMev: number;
         moniker: string;
         pubkey: string;
         stake: string;
-      }
-    | undefined
-  >(undefined);
+      }[]
+  >([]);
 
   const [highlightedValidator, setHighlightedValidator] = useState<
     | {
@@ -79,10 +80,15 @@ export default function Home() {
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
 
   useEffect(() => {
-    if (validators) {
-      setSelectedValidator(validators[0]);
+    if (validators && selectedValidators.length === 0) {
+      setSelectedValidators([
+        ...selectedValidators,
+        [...validators].sort(
+          (a, b) => b.averageNormalizedMev - a.averageNormalizedMev
+        )[0],
+      ]);
     }
-  }, [validators]);
+  }, [selectedValidators, validators]);
 
   const { data: cumulativeMEV } = useCumulativeNormalizedMEVQuery();
 
@@ -236,6 +242,12 @@ export default function Home() {
                           opacity: 0.8,
                         }}
                       />
+                      {/* <ChartTooltip
+                        contentStyle={{
+                          background: "black",
+                          fontSize: "12px",
+                        }}
+                      /> */}
                       {validators &&
                         validators.map((validator) => {
                           return (
@@ -244,7 +256,7 @@ export default function Home() {
                               dot={false}
                               dataKey={validator.moniker}
                               stroke={
-                                validator.moniker === selectedValidator?.moniker
+                                selectedValidators.includes(validator)
                                   ? "#17b57f"
                                   : validator.moniker ===
                                     highlightedValidator?.moniker
@@ -253,16 +265,32 @@ export default function Home() {
                               }
                               isAnimationActive={false}
                               opacity={
-                                validator.moniker ===
-                                  selectedValidator?.moniker ||
+                                selectedValidators.includes(validator) ||
                                 validator.moniker ===
                                   highlightedValidator?.moniker
                                   ? 1
                                   : 0.3
                               }
-                              onMouseOver={() =>
-                                setSelectedValidator(validator)
-                              }
+                              onMouseOver={() => {
+                                setHighlightedValidator(validator);
+                              }}
+                              onMouseLeave={() => {
+                                setHighlightedValidator(undefined);
+                              }}
+                              onClick={() => {
+                                if (selectedValidators.includes(validator)) {
+                                  setSelectedValidators(
+                                    selectedValidators.filter(
+                                      (v) => v.pubkey !== validator.pubkey
+                                    )
+                                  );
+                                } else {
+                                  setSelectedValidators([
+                                    ...selectedValidators,
+                                    validator,
+                                  ]);
+                                }
+                              }}
                             ></Line>
                           );
                         })}
@@ -275,13 +303,26 @@ export default function Home() {
                     {validators?.map((validator) => (
                       <button
                         className={`${
-                          selectedValidator?.moniker === validator.moniker
+                          selectedValidators.includes(validator)
                             ? "bg-[#17b57f]"
-                            : "bg-white/5"
-                        } text-xs py-1 px-2 rounded-md`}
+                            : "bg-white/5 hover:bg-[#17b57f]"
+                        } text-xs py-1 px-2 rounded-md transition-colors`}
                         key={validator.pubkey}
                         onMouseOver={() => setHighlightedValidator(validator)}
-                        onClick={() => setSelectedValidator(validator)}
+                        onClick={() => {
+                          if (selectedValidators.includes(validator)) {
+                            setSelectedValidators(
+                              selectedValidators.filter(
+                                (v) => v.pubkey !== validator.pubkey
+                              )
+                            );
+                          } else {
+                            setSelectedValidators([
+                              ...selectedValidators,
+                              validator,
+                            ]);
+                          }
+                        }}
                       >
                         {validator.moniker}
                       </button>
