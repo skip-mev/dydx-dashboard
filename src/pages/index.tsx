@@ -1,8 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
-import { useValidatorsWithStatsQuery } from "@/api";
+import {
+  useCumulativeNormalizedMEVQuery,
+  useValidatorsWithStatsQuery,
+} from "@/api";
 import Card from "@/components/Card";
 import {
   Table,
@@ -20,12 +23,15 @@ import {
 } from "@/components/Select";
 import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
+import { useQueries } from "@tanstack/react-query";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [blocks, setBlocks] = useState(43200);
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
+
+  const { data: cumulativeMEV } = useCumulativeNormalizedMEVQuery(blocks);
 
   const totalStake = useMemo(() => {
     if (!validators) {
@@ -55,6 +61,8 @@ export default function Home() {
           .includes(searchValue.toLowerCase());
       });
   }, [searchValue, validators]);
+
+  // console.log(cumulativeMEV);
 
   return (
     <Layout>

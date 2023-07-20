@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { ethers } from "ethers";
 
 // const API_URL = "http://localhost:8080";
 const API_URL = "https://dydx-mev-api-dev.skip.money";
@@ -68,9 +69,29 @@ interface Datapoint {
   block: Block;
 }
 
-export async function getNormalizedMEV(proposer: string) {
+interface NormalizedMEVRequest {
+  proposer?: string;
+  from?: number;
+  to?: number;
+}
+
+export async function getNormalizedMEV(params: NormalizedMEVRequest) {
+  const query = new URLSearchParams();
+
+  if (params.proposer) {
+    query.append("proposer", params.proposer);
+  }
+
+  if (params.from) {
+    query.append("from_height", params.from.toString());
+  }
+
+  if (params.to) {
+    query.append("to_height", params.to.toString());
+  }
+
   const response = await axios.get(
-    `${API_URL}/v1/normalized_mev?proposer=${proposer}`
+    `${API_URL}/v1/normalized_mev?${query.toString()}`
   );
 
   return response.data.datapoints as Datapoint[];
@@ -127,7 +148,9 @@ export function useNormalizedMEVQuery(proposer: string) {
   return useQuery({
     queryKey: ["normalized-mev", proposer],
     queryFn: async () => {
-      return getNormalizedMEV(proposer);
+      return getNormalizedMEV({
+        proposer,
+      });
     },
     enabled: proposer !== "",
   });
@@ -140,5 +163,54 @@ export function useRawMEVQuery(proposer: string) {
       return getRawMEV(proposer);
     },
     enabled: proposer !== "",
+  });
+}
+
+export function useCumulativeNormalizedMEVQuery(blocks: number) {
+  return useQuery({
+    onSuccess: () => {
+      alert("cumulative normalized mev query success");
+    },
+    queryKey: ["cumulative-normalized-mev", blocks],
+    queryFn: async () => {
+      const toHeight = await getLatestHeight();
+
+      let fromHeight = toHeight - blocks;
+      if (fromHeight < 0) {
+        fromHeight = 1;
+      }
+
+      const validators = await getValidators();
+
+      const normalizedMEVPromises = validators.map((validator) =>
+        getNormalizedMEV({
+          proposer: validator.pubkey,
+          from: fromHeight,
+          to: toHeight,
+        })
+      );
+
+      const results = await Promise.all(normalizedMEVPromises);
+
+      return validators.map((validator, index) => {
+        return {
+          validator: validator.moniker,
+          cumulativeNormalizedMEV: cumulativeDatapoints(results[index]),
+        };
+      });
+    },
+  });
+}
+
+export function cumulativeDatapoints(datapoints: Datapoint[]) {
+  const reversedValues = [...datapoints].reverse();
+
+  return reversedValues.map((_, index) => {
+    return {
+      key: reversedValues.length - index,
+      value: reversedValues.slice(0, index + 1).reduce((acc, value) => {
+        return acc + value.value;
+      }, 0),
+    };
   });
 }
