@@ -20,6 +20,7 @@ import {
 } from "@/components/Select";
 import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -124,7 +125,41 @@ export default function Home() {
                 Avg. Orderbook <br /> Discrepancy
               </TableHead>
               <TableHead align="right">
-                Normalized Orderbook <br /> Discrepancy (bps)
+                <div className="flex items-center justify-end gap-2 -mr-7">
+                  <span>
+                    Normalized Orderbook <br /> Discrepancy (bps)
+                  </span>
+                  <Tooltip.Provider>
+                    <Tooltip.Root delayDuration={0}>
+                      <Tooltip.Trigger asChild>
+                        <button className="block text-white/25 -mt-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-5 h-5"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          className="bg-[#151617] text-light/75 text-xs border border-zinc-800 rounded-md shadow-md font-sans w-[200px] p-4"
+                          sideOffset={5}
+                        >
+                          Abnormally high values might occur because of the
+                          difference in between observed and calculated volumes
+                          <Tooltip.Arrow className="TooltipArrow" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
+                </div>
               </TableHead>
               <TableHead align="right">Stake Weight %</TableHead>
             </TableHeader>
@@ -141,8 +176,8 @@ export default function Home() {
                     <TableCell className="w-[208px]">
                       <div className="w-full h-5 bg-white/5"></div>
                     </TableCell>
-                    <TableCell className="w-[208px]">
-                      <div className="w-full h-5 bg-white/5"></div>
+                    <TableCell className="w-[208px] flex justify-end">
+                      <div className="w-10/12 h-5 bg-white/5"></div>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -23,7 +23,7 @@ export async function getValidators() {
 }
 
 export async function getLatestHeight() {
-  const response = await axios.get(`${API_URL}/v1/raw_mev`);
+  const response = await axios.get(`${API_URL}/v1/raw_mev?limit=1`);
 
   return parseInt(response.data.datapoints[0].block.height);
 }
@@ -70,7 +70,7 @@ interface Datapoint {
 
 export async function getNormalizedMEV(proposer: string) {
   const response = await axios.get(
-    `${API_URL}/v1/normalized_mev?proposer=${proposer}`
+    `${API_URL}/v1/normalized_mev?proposer=${proposer}&limit=1000`
   );
 
   return response.data.datapoints as Datapoint[];
@@ -78,7 +78,7 @@ export async function getNormalizedMEV(proposer: string) {
 
 export async function getRawMEV(proposer: string) {
   const response = await axios.get(
-    `${API_URL}/v1/raw_mev?proposer=${proposer}`
+    `${API_URL}/v1/raw_mev?proposer=${proposer}&limit=1000`
   );
 
   return response.data.datapoints as Datapoint[];
