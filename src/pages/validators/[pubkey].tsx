@@ -169,6 +169,29 @@ function ValidatorPage() {
                         stroke="#8884d8"
                         isAnimationActive={false}
                       />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#151617",
+                          border: 0,
+                        }}
+                        labelClassName="font-semibold"
+                        wrapperClassName="font-mono text-sm"
+                        labelFormatter={(label) => {
+                          return `Block: ${
+                            datapoints.find(
+                              (datapoint) => datapoint.key === label
+                            )?.block
+                          }`;
+                        }}
+                        formatter={(value) => {
+                          return [
+                            `${new Intl.NumberFormat("en-US", {}).format(
+                              value as number
+                            )} bps`,
+                            "Orderbook Discrepancy",
+                          ];
+                        }}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 )}
@@ -225,6 +248,29 @@ function ValidatorPage() {
                         dataKey="value"
                         stroke="#8884d8"
                         isAnimationActive={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#151617",
+                          border: 0,
+                        }}
+                        labelClassName="font-semibold"
+                        wrapperClassName="font-mono text-sm"
+                        labelFormatter={(label) => {
+                          return `Block: ${
+                            datapoints.find(
+                              (datapoint) => datapoint.key === label
+                            )?.block
+                          }`;
+                        }}
+                        formatter={(value) => {
+                          return [
+                            `$${new Intl.NumberFormat("en-US", {
+                              currency: "USD",
+                            }).format(value as number)}`,
+                            "Orderbook Discrepancy",
+                          ];
+                        }}
                       />
                     </LineChart>
                   </ResponsiveContainer>

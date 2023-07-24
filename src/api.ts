@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { ethers } from "ethers";
+import { useQuery } from "@tanstack/react-query";
 
 // const API_URL = "http://localhost:8080";
 const API_URL = "https://dydx-mev-api-dev.skip.money";
