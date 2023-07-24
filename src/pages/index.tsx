@@ -305,12 +305,6 @@ export default function Home() {
                                   ? 1
                                   : 0.3
                               }
-                              onMouseOver={() => {
-                                setHighlightedValidator(validator);
-                              }}
-                              onMouseLeave={() => {
-                                setHighlightedValidator(undefined);
-                              }}
                               onClick={() => {
                                 if (selectedValidators.includes(validator)) {
                                   setSelectedValidators(
