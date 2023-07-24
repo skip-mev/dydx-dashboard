@@ -23,10 +23,7 @@ import {
 } from "@/components/Select";
 import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
-import { useQueries } from "@tanstack/react-query";
 import {
-  LabelList,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -34,6 +31,7 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from "recharts";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 function leftPadArray(array: number[], length: number) {
   if (array.length >= length) {
@@ -46,7 +44,37 @@ function leftPadArray(array: number[], length: number) {
 
   return a.concat(array);
 }
-import * as Tooltip from "@radix-ui/react-tooltip";
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    console.log(payload);
+    return (
+      <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
+        {payload
+          .sort((a: any, b: any) => b.value - a.value)
+          .slice(0, 10)
+          .map((item: any, index: number) => {
+            return (
+              <p
+                key={index}
+                className={`${
+                  item.stroke === "#17b57f" ? "text-[#17b57f]" : null
+                }`}
+              >
+                {item.dataKey}:{" "}
+                {new Intl.NumberFormat("en-US", {}).format(
+                  item.value as number
+                )}{" "}
+                bps
+              </p>
+            );
+          })}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -241,12 +269,19 @@ export default function Home() {
                           opacity: 0.8,
                         }}
                       />
-                      {/* <ChartTooltip
-                        contentStyle={{
-                          background: "black",
-                          fontSize: "12px",
-                        }}
-                      /> */}
+                      <ChartTooltip
+                        // contentStyle={{
+                        //   backgroundColor: "#151617",
+                        //   border: 0,
+                        // }}
+                        // labelClassName="font-semibold"
+                        // wrapperClassName="font-mono text-xs"
+                        // formatter={(value) => {
+                        //   console.log(value);
+                        //   return null;
+                        // }}
+                        content={<CustomTooltip />}
+                      />
                       {validators &&
                         validators.map((validator) => {
                           return (
@@ -550,7 +585,6 @@ export default function Home() {
             </Card>
           </div>
         </div>
-        {/* HERE */}
       </div>
     </Layout>
   );
