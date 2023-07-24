@@ -47,7 +47,6 @@ function leftPadArray(array: number[], length: number) {
   return a.concat(array);
 }
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { setServers } from "dns";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");

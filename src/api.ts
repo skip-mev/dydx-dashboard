@@ -26,7 +26,7 @@ export async function getValidators() {
 export async function getLatestHeight() {
   const response = await axios.get(`${API_URL}/v1/raw_mev?limit=1`);
 
-  return parseInt(response.data.datapoints[0].block.height);
+  return parseInt(response.data.datapoints[0].height);
 }
 
 export interface ValidatorStats {
@@ -47,30 +47,14 @@ export async function getValidatorStats(
   return response.data.validatorStats as ValidatorStats;
 }
 
-// {
-// "value": 0.00003667052,
-// "normalized": true,
-// "block": {
-// "proposer": "06FD24996CC2F531FC12A9DA8896252BB344897A",
-// "height": "562099",
-// "timestamp": "1689029785"
-// }
-// }
-
-interface Block {
-  proposer: string;
-  height: string;
-  timestamp: string;
-}
-
 interface Datapoint {
   value: number;
-  normalized: boolean;
-  block: Block;
+  proposer: string;
+  height: string;
 }
 
 interface DatapointRequest {
-  proposer?: string;
+  proposers: string[];
   from?: number;
   to?: number;
   limit?: number;
@@ -79,8 +63,8 @@ interface DatapointRequest {
 export async function getNormalizedMEV(params: DatapointRequest) {
   const query = new URLSearchParams();
 
-  if (params.proposer) {
-    query.append("proposer", params.proposer);
+  for (const proposer of params.proposers) {
+    query.append("proposers", proposer);
   }
 
   if (params.from) {
@@ -105,10 +89,9 @@ export async function getNormalizedMEV(params: DatapointRequest) {
 export async function getRawMEV(params: DatapointRequest) {
   const query = new URLSearchParams();
 
-  if (params.proposer) {
-    query.append("proposer", params.proposer);
+  for (const proposer of params.proposers) {
+    query.append("proposers", proposer);
   }
-
   if (params.from) {
     query.append("from_height", params.from.toString());
   }
@@ -177,7 +160,7 @@ export function useNormalizedMEVQuery(proposer: string, blocks: number) {
       }
 
       return getNormalizedMEV({
-        proposer,
+        proposers: [proposer],
         from: fromHeight,
         to: toHeight,
         limit: 1000,
@@ -199,7 +182,7 @@ export function useRawMEVQuery(proposer: string, blocks: number) {
       }
 
       return getRawMEV({
-        proposer,
+        proposers: [proposer],
         from: fromHeight,
         to: toHeight,
         limit: 1000,
@@ -215,19 +198,24 @@ export function useCumulativeNormalizedMEVQuery() {
     queryFn: async () => {
       const validators = await getValidators();
 
-      const normalizedMEVPromises = validators.map((validator) =>
-        getNormalizedMEV({
-          proposer: validator.pubkey,
-          limit: 1000,
-        })
-      );
+      const allDatapoints = await getNormalizedMEV({
+        proposers: validators.map((v) => v.pubkey),
+        limit: validators.length * 1000,
+      });
 
-      const results = await Promise.all(normalizedMEVPromises);
+      const byValidator = allDatapoints.reduce((acc, datapoint) => {
+        return {
+          ...acc,
+          [datapoint.proposer]: [...(acc[datapoint.proposer] ?? []), datapoint],
+        };
+      }, {} as Record<string, Datapoint[]>);
 
-      return validators.map((validator, index) => {
+      return validators.map((validator) => {
         return {
           validator: validator.moniker,
-          cumulativeNormalizedMEV: cumulativeDatapoints(results[index]),
+          cumulativeNormalizedMEV: cumulativeDatapoints(
+            byValidator[validator.pubkey] ?? []
+          ),
         };
       });
     },

@@ -55,7 +55,7 @@ function ValidatorPage() {
       .map((datapoint, index) => {
         return {
           key: index + 1,
-          block: datapoint.block.height,
+          block: datapoint.height,
           value: datapoint.value * 10000,
         };
       })
