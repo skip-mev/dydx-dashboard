@@ -131,14 +131,14 @@ export default function Home() {
         ...acc,
         [data.validator]: leftPadArray(
           data.cumulativeNormalizedMEV.map((v) => v.value),
-          100
+          500
         ),
       };
     }, {} as Record<string, number[]>);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 500; i++) {
       const point = {
-        key: 100 - i,
+        key: 500 - i,
       };
 
       for (const { validator } of cumulativeMEV) {
