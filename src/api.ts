@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:8080";
-// const API_URL = "https://dydx-mev-api-prod.skip.money";
+// const API_URL = "http://localhost:8080";
+const API_URL = "https://dydx-mev-api-prod.skip.money";
 
 export interface Validator {
   moniker: string;
