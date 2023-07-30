@@ -136,7 +136,7 @@ export default function Home() {
       };
     }, {} as Record<string, number[]>);
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 500; i++) {
       const point = {
         key: 1000 - i,
       };
