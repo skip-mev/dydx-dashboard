@@ -129,21 +129,22 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: leftPadArray(
+        [data.validator]: 
           data.cumulativeNormalizedMEV.map((v) => v.value),
-          500
-        ),
+          
       };
     }, {} as Record<string, number[]>);
 
     for (let i = 0; i < 500; i++) {
       const point = {
-        key: 500 - i,
+        key: i,
       };
 
       for (const { validator } of cumulativeMEV) {
         // @ts-ignore
-        point[validator] = validatorData[validator][i];
+        if (i in validatorData[validator]) {
+          point[validator] = validatorData[validator][i];
+        }
       }
 
       points.push(point);
