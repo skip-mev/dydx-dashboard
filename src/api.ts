@@ -199,7 +199,7 @@ export function useCumulativeNormalizedMEVQuery() {
 
       const allDatapoints = await getNormalizedMEV({
         proposers: validators.map((v) => v.pubkey),
-        limit: 50,
+        limit: 100,
       });
 
       const byValidator = allDatapoints.reduce((acc, datapoint) => {
