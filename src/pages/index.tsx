@@ -141,8 +141,8 @@ export default function Home() {
       };
 
       for (const { validator } of cumulativeMEV) {
-        // @ts-ignore
         if (i in validatorData[validator]) {
+          // @ts-ignore
           point[validator] = validatorData[validator][i];
         }
       }
