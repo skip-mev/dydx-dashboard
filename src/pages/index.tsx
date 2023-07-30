@@ -131,7 +131,7 @@ export default function Home() {
         ...acc,
         [data.validator]: leftPadArray(
           data.cumulativeNormalizedMEV.map((v) => v.value),
-          1000
+          500
         ),
       };
     }, {} as Record<string, number[]>);
