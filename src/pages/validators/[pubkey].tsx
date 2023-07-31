@@ -68,13 +68,13 @@ function ValidatorPage() {
       return [];
     }
 
-    const values = [...rawMEV].map((datapoint, _) => {
+    const values = [...rawMEV].reverse().map((datapoint, _) => {
       return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
     return values.map((_, index) => {
       return {
-        key: values.length - index,
+        key: index + 1,
         value: values.slice(0, index + 1).reduce((acc, value) => {
           return acc + value;
         }, 0),
