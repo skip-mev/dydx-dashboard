@@ -129,7 +129,7 @@ function ValidatorPage() {
             <Card className="p-9 pl-4 py-8">
               <div className="relative">
                 <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
-                  Orderbook Discrepancy (bps)
+                  Normalized Orderbook Discrepancy (bps)
                 </div>
                 {validatorMEV && (
                   <ResponsiveContainer width="100%" height={296}>
