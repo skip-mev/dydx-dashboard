@@ -135,7 +135,7 @@ export default function Home() {
 
     for (let i = 0; i < 1000; i++) {
       const point = {
-        key: i,
+        key: i + 1,
       };
 
       for (const { validator } of cumulativeMEV) {
