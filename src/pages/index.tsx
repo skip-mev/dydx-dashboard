@@ -268,59 +268,52 @@ export default function Home() {
                           opacity: 0.8,
                         }}
                       />
-                      <ChartTooltip
-                        // contentStyle={{
-                        //   backgroundColor: "#151617",
-                        //   border: 0,
-                        // }}
-                        // labelClassName="font-semibold"
-                        // wrapperClassName="font-mono text-xs"
-                        // formatter={(value) => {
-                        //   console.log(value);
-                        //   return null;
-                        // }}
-                        content={<CustomTooltip />}
-                      />
+                      <ChartTooltip content={<CustomTooltip />} />
                       {validators &&
-                        validators.map((validator) => {
-                          return (
-                            <Line
-                              key={validator.pubkey}
-                              dot={false}
-                              dataKey={validator.moniker}
-                              stroke={
-                                selectedValidators.includes(validator)
-                                  ? "#17b57f"
-                                  : validator.moniker ===
-                                    highlightedValidator?.moniker
-                                  ? "#34F3FF"
-                                  : "#8884d8"
-                              }
-                              isAnimationActive={false}
-                              opacity={
-                                selectedValidators.includes(validator) ||
-                                validator.moniker ===
-                                  highlightedValidator?.moniker
-                                  ? 1
-                                  : 0.3
-                              }
-                              onClick={() => {
-                                if (selectedValidators.includes(validator)) {
-                                  setSelectedValidators(
-                                    selectedValidators.filter(
-                                      (v) => v.pubkey !== validator.pubkey
-                                    )
-                                  );
-                                } else {
-                                  setSelectedValidators([
-                                    ...selectedValidators,
-                                    validator,
-                                  ]);
+                        validators
+                          .sort(
+                            (a, b) =>
+                              b.averageNormalizedMev - a.averageNormalizedMev
+                          )
+                          .map((validator) => {
+                            return (
+                              <Line
+                                key={validator.pubkey}
+                                dot={false}
+                                dataKey={validator.moniker}
+                                stroke={
+                                  selectedValidators.includes(validator)
+                                    ? "#17b57f"
+                                    : validator.moniker ===
+                                      highlightedValidator?.moniker
+                                    ? "#34F3FF"
+                                    : "#8884d8"
                                 }
-                              }}
-                            ></Line>
-                          );
-                        })}
+                                isAnimationActive={false}
+                                opacity={
+                                  selectedValidators.includes(validator) ||
+                                  validator.moniker ===
+                                    highlightedValidator?.moniker
+                                    ? 1
+                                    : 0.3
+                                }
+                                onClick={() => {
+                                  if (selectedValidators.includes(validator)) {
+                                    setSelectedValidators(
+                                      selectedValidators.filter(
+                                        (v) => v.pubkey !== validator.pubkey
+                                      )
+                                    );
+                                  } else {
+                                    setSelectedValidators([
+                                      ...selectedValidators,
+                                      validator,
+                                    ]);
+                                  }
+                                }}
+                              ></Line>
+                            );
+                          })}
                     </LineChart>
                   </ResponsiveContainer>
                   <p className="font-mono text-center text-sm pt-4">
