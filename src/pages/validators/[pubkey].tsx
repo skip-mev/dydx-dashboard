@@ -59,7 +59,6 @@ function ValidatorPage() {
           value: datapoint.value * 10000,
         };
       })
-      .reverse();
   }, [validatorMEV]);
 
   const { data: rawMEV } = useRawMEVQuery(validator?.pubkey || "", 43200);
@@ -69,7 +68,7 @@ function ValidatorPage() {
       return [];
     }
 
-    const values = [...rawMEV].reverse().map((datapoint, index) => {
+    const values = [...rawMEV].map((datapoint, _) => {
       return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
