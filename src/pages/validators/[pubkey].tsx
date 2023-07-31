@@ -74,7 +74,7 @@ function ValidatorPage() {
 
     return values.map((_, index) => {
       return {
-        key: values.length - index,
+        key: index,
         value: values.slice(0, index + 1).reduce((acc, value) => {
           return acc + value;
         }, 0),
