@@ -121,7 +121,7 @@ function ValidatorPage() {
       {validatorMEV && rawMEV && (
         <div className="space-y-12 pb-12">
           <div>
-            <div className="pb-4">
+            <div className="pb-5">
               <p className="font-mono font-bold text-xl">
                 Normalized Orderbook Discrepancy
               </p>
