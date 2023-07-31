@@ -129,9 +129,10 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: 
+        [data.validator]: leftPadArray(
           data.cumulativeNormalizedMEV.map((v) => v.value),
-          
+          1000
+        ),
       };
     }, {} as Record<string, number[]>);
 
