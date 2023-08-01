@@ -47,7 +47,6 @@ function leftPadArray(array: number[], length: number) {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    console.log(payload);
     return (
       <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
         {payload
@@ -55,18 +54,22 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           .slice(0, 10)
           .map((item: any, index: number) => {
             return (
-              <p
-                key={index}
-                className={`${
+              <div
+                className={`flex items-center gap-4 ${
                   item.stroke === "#17b57f" ? "text-[#17b57f]" : null
                 }`}
+                key={index}
               >
-                {item.dataKey}:{" "}
-                {new Intl.NumberFormat("en-US", {}).format(
-                  item.value as number
-                )}{" "}
-                bps
-              </p>
+                <p className="flex-1 max-w-[100px] truncate">
+                  {item.dataKey}:{" "}
+                </p>
+                <p>
+                  {new Intl.NumberFormat("en-US", {}).format(
+                    item.value as number
+                  )}{" "}
+                  bps
+                </p>
+              </div>
             );
           })}
       </div>
