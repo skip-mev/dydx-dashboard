@@ -32,6 +32,7 @@ import {
   Tooltip as ChartTooltip,
 } from "recharts";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import Head from "next/head";
 
 function leftPadArray(array: number[], length: number) {
   if (array.length >= length) {
@@ -211,6 +212,9 @@ export default function Home() {
 
   return (
     <Layout>
+      <Head>
+        <title>dYdX MEV Dashboard | Skip</title>
+      </Head>
       {fetchStatus === "fetching" && (
         <div className="w-full h-1 bg-indigo-500 fixed top-0 left-0 right-0 overflow-hidden">
           <div className="bg-indigo-600 w-full h-full animate-fade-right animate-infinite"></div>
@@ -358,27 +362,8 @@ export default function Home() {
         </div>
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-end gap-4">
               <p className="font-mono font-bold text-xl">Validators</p>
-              <Select
-                defaultValue="today"
-                onValueChange={(value) => {
-                  const strToBlocks: Record<string, number> = {
-                    today: 43200,
-                    "7D": 302400,
-                    "30D": 2116800,
-                  };
-
-                  setBlocks(strToBlocks[value]);
-                }}
-              >
-                <SelectTrigger />
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="7D">7 Days</SelectItem>
-                  <SelectItem value="30D">30 Days</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -404,6 +389,28 @@ export default function Home() {
               />
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
+              <div className="flex items-center gap-1">
+                <p className="text-sm text-white/50">Timeframe:</p>
+                <Select
+                  defaultValue="today"
+                  onValueChange={(value) => {
+                    const strToBlocks: Record<string, number> = {
+                      today: 43200,
+                      "7D": 302400,
+                      "30D": 2116800,
+                    };
+
+                    setBlocks(strToBlocks[value]);
+                  }}
+                >
+                  <SelectTrigger />
+                  <SelectContent>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="7D">7 Days</SelectItem>
+                    <SelectItem value="30D">30 Days</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Sort By:</p>
                 <Select
