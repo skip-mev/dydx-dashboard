@@ -51,14 +51,13 @@ function ValidatorPage() {
       return [];
     }
 
-    return [...validatorMEV]
-      .map((datapoint, index) => {
-        return {
-          key: index + 1,
-          block: datapoint.height,
-          value: datapoint.value * 10000,
-        };
-      })
+    return [...validatorMEV].map((datapoint, index) => {
+      return {
+        key: index + 1,
+        block: datapoint.height,
+        value: datapoint.value * 10000,
+      };
+    });
   }, [validatorMEV]);
 
   const { data: rawMEV } = useRawMEVQuery(validator?.pubkey || "", 43200);
@@ -136,6 +135,7 @@ function ValidatorPage() {
                     <LineChart
                       data={datapoints}
                       margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                      syncId="chart"
                     >
                       <XAxis
                         dataKey="key"
@@ -216,6 +216,7 @@ function ValidatorPage() {
                     <LineChart
                       data={rawMEVDatapoints}
                       margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                      syncId="chart"
                     >
                       <XAxis
                         dataKey="key"
