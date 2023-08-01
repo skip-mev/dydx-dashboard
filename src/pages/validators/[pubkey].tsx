@@ -6,9 +6,10 @@ import {
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import { ethers } from "ethers";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -82,208 +83,213 @@ function ValidatorPage() {
   }, [rawMEV]);
 
   return (
-    <Layout>
-      <div className="py-12 space-y-4">
-        <Link
-          className="text-sm text-white/50 font-bold font-mono flex items-center gap-2"
-          href="/"
-        >
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 15 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+    <Fragment>
+      <Head>
+        <title>{validator?.moniker} - dYdX MEV Dashboard | Skip</title>
+      </Head>
+      <Layout>
+        <div className="py-12 space-y-4">
+          <Link
+            className="text-sm text-white/50 font-bold font-mono flex items-center gap-2"
+            href="/"
           >
-            <path
-              d="M11.875 7.5H3.125"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M7.5 11.875L3.125 7.5L7.5 3.125"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.875 7.5H3.125"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7.5 11.875L3.125 7.5L7.5 3.125"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
 
-          <span>Return to home</span>
-        </Link>
-        <h1 className="font-mono font-bold text-3xl">
-          {validator && validator.moniker}
-        </h1>
-      </div>
-      {validatorMEV && rawMEV && (
-        <div className="space-y-12 pb-12">
-          <div>
-            <div className="pb-4">
-              <p className="font-mono font-bold text-xl">
-                Normalized Orderbook Discrepancy
-              </p>
-            </div>
-            <Card className="p-9 pl-4 py-8">
-              <div className="relative">
-                <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
-                  Orderbook Discrepancy (bps)
-                </div>
-                {validatorMEV && (
-                  <ResponsiveContainer width="100%" height={296}>
-                    <LineChart
-                      data={datapoints}
-                      margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
-                      syncId="chart"
-                    >
-                      <XAxis
-                        dataKey="key"
-                        axisLine={false}
-                        tickLine={false}
-                        offset={50}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                        minTickGap={50}
-                        interval="preserveStartEnd"
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        padding={{ top: 20, bottom: 20 }}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                      />
-                      <Line
-                        dot={false}
-                        dataKey="value"
-                        stroke="#8884d8"
-                        isAnimationActive={false}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#151617",
-                          border: 0,
-                        }}
-                        labelClassName="font-semibold"
-                        wrapperClassName="font-mono text-sm"
-                        labelFormatter={(label) => {
-                          return `Block: ${
-                            datapoints.find(
-                              (datapoint) => datapoint.key === label
-                            )?.block
-                          }`;
-                        }}
-                        formatter={(value) => {
-                          return [
-                            `${new Intl.NumberFormat("en-US", {}).format(
-                              value as number
-                            )} bps`,
-                            "Orderbook Discrepancy",
-                          ];
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-                <p className="font-mono text-center pt-4">
-                  Past Proposed Blocks
-                </p>
-              </div>
-            </Card>
-          </div>
-          <div>
-            <div className="pb-4">
-              <p className="font-mono font-bold text-xl">
-                Cumulative Orderbook Discrepancy
-              </p>
-            </div>
-            <Card className="p-9 pl-4 py-8">
-              <div className="relative">
-                <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[120px] font-mono">
-                  Cumulative Orderbook Discrepancy ($)
-                </div>
-                {validatorMEV && (
-                  <ResponsiveContainer width="100%" height={296}>
-                    <LineChart
-                      data={rawMEVDatapoints}
-                      margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
-                      syncId="chart"
-                    >
-                      <XAxis
-                        dataKey="key"
-                        axisLine={false}
-                        tickLine={false}
-                        offset={50}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                        minTickGap={50}
-                        interval="preserveStartEnd"
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        padding={{ top: 20, bottom: 20 }}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                      />
-                      <Line
-                        dot={false}
-                        dataKey="value"
-                        stroke="#8884d8"
-                        isAnimationActive={false}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#151617",
-                          border: 0,
-                        }}
-                        labelClassName="font-semibold"
-                        wrapperClassName="font-mono text-sm"
-                        labelFormatter={(label) => {
-                          return `Block: ${
-                            datapoints.find(
-                              (datapoint) => datapoint.key === label
-                            )?.block
-                          }`;
-                        }}
-                        formatter={(value) => {
-                          return [
-                            `$${new Intl.NumberFormat("en-US", {
-                              currency: "USD",
-                            }).format(value as number)}`,
-                            "Orderbook Discrepancy",
-                          ];
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-                <p className="font-mono text-center pt-4">
-                  Past Proposed Blocks
-                </p>
-              </div>
-            </Card>
-          </div>
+            <span>Return to home</span>
+          </Link>
+          <h1 className="font-mono font-bold text-3xl">
+            {validator && validator.moniker}
+          </h1>
         </div>
-      )}
-    </Layout>
+        {validatorMEV && rawMEV && (
+          <div className="space-y-12 pb-12">
+            <div>
+              <div className="pb-4">
+                <p className="font-mono font-bold text-xl">
+                  Normalized Orderbook Discrepancy
+                </p>
+              </div>
+              <Card className="p-9 pl-4 py-8">
+                <div className="relative">
+                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
+                    Orderbook Discrepancy (bps)
+                  </div>
+                  {validatorMEV && (
+                    <ResponsiveContainer width="100%" height={296}>
+                      <LineChart
+                        data={datapoints}
+                        margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                        syncId="chart"
+                      >
+                        <XAxis
+                          dataKey="key"
+                          axisLine={false}
+                          tickLine={false}
+                          offset={50}
+                          style={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
+                          minTickGap={50}
+                          interval="preserveStartEnd"
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          padding={{ top: 20, bottom: 20 }}
+                          style={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
+                        />
+                        <Line
+                          dot={false}
+                          dataKey="value"
+                          stroke="#8884d8"
+                          isAnimationActive={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#151617",
+                            border: 0,
+                          }}
+                          labelClassName="font-semibold"
+                          wrapperClassName="font-mono text-sm"
+                          labelFormatter={(label) => {
+                            return `Block: ${
+                              datapoints.find(
+                                (datapoint) => datapoint.key === label
+                              )?.block
+                            }`;
+                          }}
+                          formatter={(value) => {
+                            return [
+                              `${new Intl.NumberFormat("en-US", {}).format(
+                                value as number
+                              )} bps`,
+                              "Orderbook Discrepancy",
+                            ];
+                          }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                  <p className="font-mono text-center pt-4">
+                    Past Proposed Blocks
+                  </p>
+                </div>
+              </Card>
+            </div>
+            <div>
+              <div className="pb-4">
+                <p className="font-mono font-bold text-xl">
+                  Cumulative Orderbook Discrepancy
+                </p>
+              </div>
+              <Card className="p-9 pl-4 py-8">
+                <div className="relative">
+                  <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[120px] font-mono">
+                    Cumulative Orderbook Discrepancy ($)
+                  </div>
+                  {validatorMEV && (
+                    <ResponsiveContainer width="100%" height={296}>
+                      <LineChart
+                        data={rawMEVDatapoints}
+                        margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                        syncId="chart"
+                      >
+                        <XAxis
+                          dataKey="key"
+                          axisLine={false}
+                          tickLine={false}
+                          offset={50}
+                          style={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
+                          minTickGap={50}
+                          interval="preserveStartEnd"
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          padding={{ top: 20, bottom: 20 }}
+                          style={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
+                        />
+                        <Line
+                          dot={false}
+                          dataKey="value"
+                          stroke="#8884d8"
+                          isAnimationActive={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#151617",
+                            border: 0,
+                          }}
+                          labelClassName="font-semibold"
+                          wrapperClassName="font-mono text-sm"
+                          labelFormatter={(label) => {
+                            return `Block: ${
+                              datapoints.find(
+                                (datapoint) => datapoint.key === label
+                              )?.block
+                            }`;
+                          }}
+                          formatter={(value) => {
+                            return [
+                              `$${new Intl.NumberFormat("en-US", {
+                                currency: "USD",
+                              }).format(value as number)}`,
+                              "Orderbook Discrepancy",
+                            ];
+                          }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                  <p className="font-mono text-center pt-4">
+                    Past Proposed Blocks
+                  </p>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+      </Layout>
+    </Fragment>
   );
 }
 
