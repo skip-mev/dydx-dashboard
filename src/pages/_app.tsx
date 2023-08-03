@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import { Inconsolata, Inter } from "next/font/google";
 import { Fragment } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -23,6 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </main>
       </QueryClientProvider>
+      <Analytics />
     </Fragment>
   );
 }
