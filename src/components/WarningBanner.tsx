@@ -2,7 +2,7 @@ import { FC } from "react";
 
 const WarningBanner: FC = () => {
   return (
-    <div className="bg-[#FF486E] font-semibold text-sm text-white text-center py-2 z-[9999999]">
+    <div className="bg-[#FF486E] font-semibold text-sm text-white items-center text-center py-2 z-[9999999]">
       <div className="overflow-hidden">
         <div className="flex items-center">
           <div className="inline-flex items-center justify-center">
