@@ -20,7 +20,7 @@ export default async function handler(
   const cumulativeMEV = validators.map((validator, index) => {
     return {
       validator: validator.moniker,
-      cumulativeMEV: cumulativeDatapoints(allData[index]),
+      cumulativeMEV: cumulativeDatapoints([...allData[index]].reverse()),
     };
   });
 
