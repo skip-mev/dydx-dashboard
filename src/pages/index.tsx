@@ -2,10 +2,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
-import {
-  useCumulativeNormalizedMEVQuery,
-  useValidatorsWithStatsQuery,
-} from "@/api";
+import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/api";
 import Card from "@/components/Card";
 import {
   Table,
@@ -31,20 +28,7 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from "recharts";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import Head from "next/head";
-
-function leftPadArray(array: number[], length: number) {
-  if (array.length >= length) {
-    return array;
-  }
-
-  const n = length - array.length;
-
-  const a = Array.from({ length: n }).fill(0) as number[];
-
-  return a.concat(array);
-}
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -65,10 +49,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                   {item.dataKey}:{" "}
                 </p>
                 <p>
-                  {new Intl.NumberFormat("en-US", {}).format(
-                    item.value as number
-                  )}{" "}
-                  bps
+                  {new Intl.NumberFormat("en-US", {
+                    currency: "USD",
+                    style: "currency",
+                  }).format(item.value as number)}{" "}
                 </p>
               </div>
             );
@@ -90,7 +74,6 @@ export default function Home() {
   const [selectedValidators, setSelectedValidators] = useState<
     | {
         averageMev: string;
-        averageNormalizedMev: number;
         moniker: string;
         pubkey: string;
         stake: string;
@@ -100,7 +83,6 @@ export default function Home() {
   const [highlightedValidator, setHighlightedValidator] = useState<
     | {
         averageMev: string;
-        averageNormalizedMev: number;
         moniker: string;
         pubkey: string;
         stake: string;
@@ -115,13 +97,13 @@ export default function Home() {
       setSelectedValidators([
         ...selectedValidators,
         [...validators].sort(
-          (a, b) => b.averageNormalizedMev - a.averageNormalizedMev
+          (a, b) => parseInt(b.averageMev) - parseInt(a.averageMev)
         )[0],
       ]);
     }
   }, [selectedValidators, validators]);
 
-  const { data: cumulativeMEV } = useCumulativeNormalizedMEVQuery();
+  const { data: cumulativeMEV } = useCumulativeMEVQuery();
 
   const chartData = useMemo(() => {
     if (!cumulativeMEV) {
@@ -133,7 +115,9 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: data.cumulativeNormalizedMEV.map((v) => v.value),
+        [data.validator]: data.cumulativeNormalizedMEV.map((v) =>
+          parseFloat(ethers.formatUnits(v.value.toFixed(0), 6))
+        ),
       };
     }, {} as Record<string, number[]>);
 
@@ -187,13 +171,6 @@ export default function Home() {
           return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
         }
 
-        if (sortBy === "averageNormalizedMev") {
-          const aMev = a.averageNormalizedMev;
-          const bMev = b.averageNormalizedMev;
-
-          return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
-        }
-
         if (sortBy === "stake") {
           const aStake = parseFloat(ethers.formatUnits(a.stake, 6));
           const bStake = parseFloat(ethers.formatUnits(b.stake, 6));
@@ -243,8 +220,8 @@ export default function Home() {
               {chartData.length === 0 && <div className="h-[300px] w-full" />}
               {chartData.length > 0 && (
                 <Fragment>
-                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[115px] font-mono text-xs">
-                    Cumulative Order Book Discrepancy (bps)
+                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[110px] font-mono text-xs">
+                    Cumulative Order Book Discrepancy ($)
                   </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
@@ -280,7 +257,8 @@ export default function Home() {
                         validators
                           .sort(
                             (a, b) =>
-                              b.averageNormalizedMev - a.averageNormalizedMev
+                              parseFloat(b.averageMev) -
+                              parseFloat(a.averageMev)
                           )
                           .map((validator) => {
                             return (
@@ -479,32 +457,8 @@ export default function Home() {
                   <TableHead>Validator</TableHead>
                   <TableHead align="right">
                     <span>
-                      Avg. Orderbook <br /> Discrepancy
+                      Avg. Order book <br /> Discrepancy
                     </span>
-                  </TableHead>
-                  <TableHead align="right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Tooltip.Provider>
-                        <Tooltip.Root delayDuration={0}>
-                          <Tooltip.Trigger asChild>
-                            <span className="underline">
-                              Normalized Orderbook <br /> Discrepancy (bps)
-                            </span>
-                          </Tooltip.Trigger>
-                          <Tooltip.Portal>
-                            <Tooltip.Content
-                              className="bg-[#151617] text-light/75 text-xs border border-zinc-800 rounded-md shadow-md font-sans w-[200px] p-4"
-                              sideOffset={5}
-                            >
-                              Abnormally high values might occur because of the
-                              difference in between observed and calculated
-                              volumes
-                              <Tooltip.Arrow className="TooltipArrow" />
-                            </Tooltip.Content>
-                          </Tooltip.Portal>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </div>
                   </TableHead>
                   <TableHead align="right">Stake Weight %</TableHead>
                 </TableHeader>
@@ -537,8 +491,6 @@ export default function Home() {
                         ethers.formatUnits(validator.averageMev, 6)
                       );
 
-                      const averageNormalizedMev =
-                        validator.averageNormalizedMev * 10000;
                       return (
                         <TableRow key={validator.pubkey}>
                           <TableCell className="w-[400px] truncate">
@@ -567,9 +519,9 @@ export default function Home() {
                               currency: "USD",
                             }).format(averageMev)}
                           </TableCell>
-                          <TableCell align="right" className="w-[208px]">
+                          {/* <TableCell align="right" className="w-[208px]">
                             {averageNormalizedMev.toFixed(3)}
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="right" className="w-[208px]">
                             {stakePercent.toFixed(2)}%
                           </TableCell>

@@ -30,7 +30,6 @@ export async function getLatestHeight() {
 
 export interface ValidatorStats {
   averageMev: string;
-  averageNormalizedMev: number;
   validatorPubkey: string;
 }
 
@@ -39,11 +38,19 @@ export async function getValidatorStats(
   fromHeight: number,
   toHeight: number
 ) {
-  const response = await axios.get(
-    `${API_URL}/v1/validator_stats?validator_pubkey=${pubkey}&from_height=${fromHeight}&to_height=${toHeight}`
-  );
+  try {
+    const response = await axios.get(
+      `${API_URL}/v1/validator_stats?validator_pubkey=${pubkey}&from_height=${fromHeight}&to_height=${toHeight}`
+    );
 
-  return response.data.validatorStats as ValidatorStats;
+    return response.data.validatorStats as ValidatorStats;
+  } catch {
+    return {
+      averageMev: "0",
+      averageNormalizedMev: 0,
+      validatorPubkey: pubkey,
+    };
+  }
 }
 
 interface Datapoint {
@@ -60,31 +67,31 @@ interface DatapointRequest {
   limit?: number;
 }
 
-export async function getNormalizedMEV(params: DatapointRequest) {
-  const query = new URLSearchParams();
+// export async function getNormalizedMEV(params: DatapointRequest) {
+//   const query = new URLSearchParams();
 
-  for (const proposer of params.proposers) {
-    query.append("proposers", proposer);
-  }
+//   for (const proposer of params.proposers) {
+//     query.append("proposers", proposer);
+//   }
 
-  if (params.from) {
-    query.append("from_height", params.from.toString());
-  }
+//   if (params.from) {
+//     query.append("from_height", params.from.toString());
+//   }
 
-  if (params.to) {
-    query.append("to_height", params.to.toString());
-  }
+//   if (params.to) {
+//     query.append("to_height", params.to.toString());
+//   }
 
-  if (params.limit) {
-    query.append("limit", params.limit.toString());
-  }
+//   if (params.limit) {
+//     query.append("limit", params.limit.toString());
+//   }
 
-  const response = await axios.get(
-    `${API_URL}/v1/normalized_mev?${query.toString()}`
-  );
+//   const response = await axios.get(
+//     `${API_URL}/v1/normalized_mev?${query.toString()}`
+//   );
 
-  return response.data.datapoints as Datapoint[];
-}
+//   return response.data.datapoints as Datapoint[];
+// }
 
 export async function getRawMEV(params: DatapointRequest) {
   const query = new URLSearchParams();
@@ -131,7 +138,6 @@ export function useValidatorsWithStatsQuery(blocks: number) {
       return validators.map((validator, index) => ({
         ...validator,
         averageMev: stats[index].averageMev,
-        averageNormalizedMev: stats[index].averageNormalizedMev,
       }));
     },
     keepPreviousData: true,
@@ -148,27 +154,27 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useNormalizedMEVQuery(proposer: string, blocks: number) {
-  return useQuery({
-    queryKey: ["normalized-mev", proposer, blocks],
-    queryFn: async () => {
-      const toHeight = await getLatestHeight();
+// export function useNormalizedMEVQuery(proposer: string, blocks: number) {
+//   return useQuery({
+//     queryKey: ["normalized-mev", proposer, blocks],
+//     queryFn: async () => {
+//       const toHeight = await getLatestHeight();
 
-      let fromHeight = toHeight - blocks;
-      if (fromHeight < 0) {
-        fromHeight = 1;
-      }
+//       let fromHeight = toHeight - blocks;
+//       if (fromHeight < 0) {
+//         fromHeight = 1;
+//       }
 
-      return getNormalizedMEV({
-        proposers: [proposer],
-        from: fromHeight,
-        to: toHeight,
-        limit: 1000,
-      });
-    },
-    enabled: proposer !== "",
-  });
-}
+//       return getNormalizedMEV({
+//         proposers: [proposer],
+//         from: fromHeight,
+//         to: toHeight,
+//         limit: 1000,
+//       });
+//     },
+//     enabled: proposer !== "",
+//   });
+// }
 
 export function useRawMEVQuery(proposer: string, blocks: number) {
   return useQuery({
@@ -192,15 +198,15 @@ export function useRawMEVQuery(proposer: string, blocks: number) {
   });
 }
 
-export function useCumulativeNormalizedMEVQuery() {
+export function useCumulativeMEVQuery() {
   return useQuery({
     queryKey: ["cumulative-normalized-mev"],
     queryFn: async () => {
       const validators = await getValidators();
 
-      const allDatapoints = await getNormalizedMEV({
+      const allDatapoints = await getRawMEV({
         proposers: validators.map((v) => v.pubkey),
-        limit: 1000,
+        limit: 50000,
       });
 
       const byValidator = allDatapoints.reduce((acc, datapoint) => {
@@ -218,6 +224,8 @@ export function useCumulativeNormalizedMEVQuery() {
           ),
         };
       });
+
+      // return [];
     },
   });
 }
@@ -229,7 +237,7 @@ export function cumulativeDatapoints(datapoints: Datapoint[]) {
     return {
       key: reversedValues.length - index,
       value: reversedValues.slice(0, index + 1).reduce((acc, value) => {
-        return acc + value.value * 10000;
+        return acc + value.value;
       }, 0),
     };
   });
