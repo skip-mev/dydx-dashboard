@@ -115,7 +115,7 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: data.cumulativeNormalizedMEV.map((v) =>
+        [data.validator]: data.cumulativeMEV.map((v) =>
           parseFloat(ethers.formatUnits(v.value.toFixed(0), 6))
         ),
       };
@@ -205,9 +205,7 @@ export default function Home() {
               <span className="text-4xl leading-[32px] font-black">/</span>
               <img className="h-8" src="/skip-logo.svg" alt="" />
             </div>
-            <p className="font-mono font-bold text-xl">
-              Order Book Discrepancy
-            </p>
+            <p className="font-mono font-bold text-xl">Orderbook Discrepancy</p>
           </div>
         </div>
         <div>
@@ -221,7 +219,7 @@ export default function Home() {
               {chartData.length > 0 && (
                 <Fragment>
                   <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[110px] font-mono text-xs">
-                    Cumulative Order Book Discrepancy ($)
+                    Cumulative Orderbook Discrepancy ($)
                   </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
@@ -401,9 +399,6 @@ export default function Home() {
                   <SelectContent>
                     <SelectItem value="validator">Validator</SelectItem>
                     <SelectItem value="averageMev">Avg. Discrepancy</SelectItem>
-                    <SelectItem value="averageNormalizedMev">
-                      Normalized Discrepancy
-                    </SelectItem>
                     <SelectItem value="stake">Stake Weight</SelectItem>
                   </SelectContent>
                 </Select>
@@ -457,10 +452,10 @@ export default function Home() {
                   <TableHead>Validator</TableHead>
                   <TableHead align="right">
                     <span>
-                      Avg. Order book <br /> Discrepancy
+                      Avg. Orderbook <br /> Discrepancy
                     </span>
                   </TableHead>
-                  <TableHead align="right">Stake Weight %</TableHead>
+                  <TableHead align="right">Stake Weight</TableHead>
                 </TableHeader>
                 <TableBody>
                   {!sortedValidators &&
@@ -519,9 +514,6 @@ export default function Home() {
                               currency: "USD",
                             }).format(averageMev)}
                           </TableCell>
-                          {/* <TableCell align="right" className="w-[208px]">
-                            {averageNormalizedMev.toFixed(3)}
-                          </TableCell> */}
                           <TableCell align="right" className="w-[208px]">
                             {stakePercent.toFixed(2)}%
                           </TableCell>
