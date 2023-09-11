@@ -60,7 +60,7 @@ function ValidatorPage() {
       return [];
     }
 
-    const values = [...datapoints].reverse().map((datapoint, _) => {
+    const values = [...datapoints].map((datapoint, _) => {
       return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
@@ -131,8 +131,6 @@ function ValidatorPage() {
                   <div className="absolute -rotate-90 translate-y-[140px] translate-x-[55px] right-0 font-mono">
                     Probability (%)
                   </div>
-                  {/*
-                   */}
                   {formattedDatapoints && (
                     <ResponsiveContainer width="100%" height={296}>
                       <LineChart
