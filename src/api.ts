@@ -166,14 +166,19 @@ export function useCumulativeMEVQuery() {
   });
 }
 
-export function cumulativeDatapoints(datapoints: Datapoint[]) {
+export function cumulativeDatapoints(datapoints: Datapoint[], probabilityThreshold: number) {
   const reversedValues = [...datapoints].reverse();
 
   return reversedValues.map((_, index) => {
     return {
       key: reversedValues.length - index,
       value: reversedValues.slice(0, index + 1).reduce((acc, value) => {
-        return acc + value.value;
+        let discrepancy = value.value;
+        if (value.probability > probabilityThreshold) {
+            return acc + discrepancy;
+        } else {
+            return acc;
+        }
       }, 0),
     };
   });
