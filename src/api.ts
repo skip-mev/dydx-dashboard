@@ -23,9 +23,9 @@ export async function getValidators(): Promise<Validator[]> {
 }
 
 export async function getLatestHeight() {
-  const response = await axios.get(`${API_URL}/v1/raw_mev?limit=1`);
+  const response = await axios.get(`${API_URL}/v1/block_range`);
 
-  return parseInt(response.data.datapoints[0].height);
+  return parseInt(response.data.lastHeight);
 }
 
 export interface ValidatorStats {
