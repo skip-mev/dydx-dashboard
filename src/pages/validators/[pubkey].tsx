@@ -17,8 +17,6 @@ import {
   YAxis,
 } from "recharts";
 
-const THRESHOLD = 67;
-
 function ValidatorPage() {
   const router = useRouter();
 
@@ -181,11 +179,6 @@ function ValidatorPage() {
                           isAnimationActive={false}
                           yAxisId="left"
                           name="Orderbook Discrepancy ($)"
-                        />
-                        <ReferenceLine
-                          y={THRESHOLD}
-                          yAxisId="right"
-                          stroke="red"
                         />
                         <Legend
                           verticalAlign="top"
