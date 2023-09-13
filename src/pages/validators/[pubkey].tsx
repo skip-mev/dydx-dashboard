@@ -128,9 +128,6 @@ function ValidatorPage() {
                   <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[60px] font-mono">
                     Orderbook Discrepancy ($)
                   </div>
-                  <div className="absolute -rotate-90 translate-y-[140px] translate-x-[55px] right-0 font-mono">
-                    Probability (%)
-                  </div>
                   {formattedDatapoints && (
                     <ResponsiveContainer width="100%" height={296}>
                       <LineChart
@@ -184,14 +181,6 @@ function ValidatorPage() {
                           isAnimationActive={false}
                           yAxisId="left"
                           name="Orderbook Discrepancy ($)"
-                        />
-                        <Line
-                          dot={false}
-                          dataKey="probability"
-                          stroke="#8884d8"
-                          isAnimationActive={false}
-                          yAxisId="right"
-                          name="Probability (%)"
                         />
                         <ReferenceLine
                           y={THRESHOLD}
