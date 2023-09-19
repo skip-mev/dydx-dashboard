@@ -41,7 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             return (
               <div
                 className={`flex items-center gap-4 ${
-                  item.stroke === "#17b57f" ? "text-[#17b57f]" : null
+                  item.stroke === "#b51717" ? "text-[#b51717]" : null
                 }`}
                 key={index}
               >
@@ -266,7 +266,7 @@ export default function Home() {
                                 dataKey={validator.moniker}
                                 stroke={
                                   selectedValidators.includes(validator)
-                                    ? "#17b57f"
+                                    ? "#b51717"
                                     : validator.moniker ===
                                       highlightedValidator?.moniker
                                     ? "#34F3FF"
@@ -307,8 +307,8 @@ export default function Home() {
                       <button
                         className={`${
                           selectedValidators.includes(validator)
-                            ? "bg-[#17b57f]"
-                            : "bg-white/5 hover:bg-[#17b57f]"
+                            ? "bg-[#b51717]"
+                            : "bg-white/5 hover:bg-[#b51717]"
                         } text-xs py-1 px-2 rounded-md transition-colors`}
                         key={validator.pubkey}
                         onMouseOver={() => setHighlightedValidator(validator)}
