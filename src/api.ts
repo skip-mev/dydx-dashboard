@@ -64,6 +64,7 @@ interface DatapointRequest {
   from?: number;
   to?: number;
   limit?: number;
+  withBlockInfo?: boolean;
 }
 
 export async function getRawMEV(params: DatapointRequest) {
@@ -82,6 +83,10 @@ export async function getRawMEV(params: DatapointRequest) {
 
   if (params.limit) {
     query.append("limit", params.limit.toString());
+  }
+
+  if (params.withBlockInfo) {
+    query.append("with_block_info", params.withBlockInfo.toString());
   }
 
   const response = await axios.get(`${API_URL}/v1/raw_mev?${query.toString()}`);
@@ -127,7 +132,7 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useRawMEVQuery(proposer: string, blocks: number) {
+export function useRawMEVQuery(proposer: string, blocks: number, withBlockInfo: boolean) {
   return useQuery({
     queryKey: ["raw-mev", proposer, blocks],
     queryFn: async () => {
@@ -143,6 +148,7 @@ export function useRawMEVQuery(proposer: string, blocks: number) {
         from: fromHeight,
         to: toHeight,
         limit: 1000,
+        withBlockInfo: withBlockInfo,
       });
     },
     enabled: proposer !== "",
