@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-
-const API_URL = "https://dydx-mev-api-dev.skip.money";
-// const API_URL = "https://dydx-mev-api-prod.skip.money";
+import { API_URL } from "./constants";
 
 export interface Validator {
   moniker: string;
@@ -132,7 +130,11 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useRawMEVQuery(proposer: string, blocks: number, withBlockInfo: boolean) {
+export function useRawMEVQuery(
+  proposer: string,
+  blocks: number,
+  withBlockInfo: boolean
+) {
   return useQuery({
     queryKey: ["raw-mev", proposer, blocks],
     queryFn: async () => {
@@ -172,7 +174,10 @@ export function useCumulativeMEVQuery() {
   });
 }
 
-export function cumulativeDatapoints(datapoints: Datapoint[], probabilityThreshold: number) {
+export function cumulativeDatapoints(
+  datapoints: Datapoint[],
+  probabilityThreshold: number
+) {
   const reversedValues = [...datapoints].reverse();
 
   return reversedValues.map((_, index) => {
@@ -181,9 +186,9 @@ export function cumulativeDatapoints(datapoints: Datapoint[], probabilityThresho
       value: reversedValues.slice(0, index + 1).reduce((acc, value) => {
         let discrepancy = value.value;
         if (value.probability > probabilityThreshold) {
-            return acc + discrepancy;
+          return acc + discrepancy;
         } else {
-            return acc;
+          return acc;
         }
       }, 0),
     };
