@@ -28,27 +28,31 @@ export async function getLatestHeight() {
   return parseInt(response.data.lastHeight);
 }
 
-export interface ValidatorStats {
+export interface ValidatorStatsResponse {
   averageMev: string;
   validatorPubkey: string;
 }
 
 export async function getValidatorStats(
-  pubkey: string,
   fromHeight: number,
   toHeight: number
 ) {
   try {
     const response = await axios.get(
-      `${API_URL}/v1/validator_stats?validator_pubkey=${pubkey}&from_height=${fromHeight}&to_height=${toHeight}`
+      `${API_URL}/v1/validator_stats?from_height=${fromHeight}&to_height=${toHeight}`
     );
 
-    return response.data.validatorStats as ValidatorStats;
+    return response.data.validatorStats.reduce(
+        (acc: Record<string, string>, item: ValidatorStatsResponse) => {
+            acc[item.validatorPubkey] = item.averageMev;
+            return acc;
+        }, {}
+    );
   } catch {
-    return {
+    return [{
       averageMev: "0",
-      validatorPubkey: pubkey,
-    };
+      validatorPubkey: "",
+    }];
   }
 }
 
@@ -107,15 +111,11 @@ export function useValidatorsWithStatsQuery(blocks: number) {
         fromHeight = 1;
       }
 
-      const statPromises = validators.map((validator) =>
-        getValidatorStats(validator.pubkey, fromHeight, toHeight)
-      );
+      const stats = await getValidatorStats(fromHeight, toHeight);
 
-      const stats = await Promise.all(statPromises);
-
-      return validators.map((validator, index) => ({
+      return validators.map((validator) => ({
         ...validator,
-        averageMev: stats[index].averageMev,
+        averageMev: stats[validator.pubkey] || 0,
       }));
     },
     keepPreviousData: true,
