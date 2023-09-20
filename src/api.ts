@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const API_URL = "https://dydx-mev-api-dev.skip.money";
+const API_URL = "https://zygis-dydx.ngrok.app";
+// const API_URL = "https://dydx-mev-api-dev.skip.money";
 // const API_URL = "https://dydx-mev-api-prod.skip.money";
 
 export interface Validator {
@@ -43,8 +44,8 @@ export async function getValidatorStats(
     );
 
     return response.data.validatorStats.reduce(
-        (acc: Map<string, string>, item: ValidatorStatsResponse) => {
-            acc.set(item.validatorPubkey, item.averageMev);
+        (acc: Record<string, string>, item: ValidatorStatsResponse) => {
+            acc[item.validatorPubkey] = item.averageMev;
             return acc;
         }, {}
     );
