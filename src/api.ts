@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { API_URL } from "./constants";
 
@@ -13,17 +12,17 @@ export interface GetValidatorsResponse {
 }
 
 export async function getValidators(): Promise<Validator[]> {
-  const response = await axios.get(`${API_URL}/v1/validator`);
-
-  const { validators } = response.data as GetValidatorsResponse;
+  const response = await fetch(`${API_URL}/v1/validator`);
+  const { validators } = (await response.json()) as GetValidatorsResponse;
 
   return validators;
 }
 
 export async function getLatestHeight() {
-  const response = await axios.get(`${API_URL}/v1/block_range`);
+  const response = await fetch(`${API_URL}/v1/block_range`);
+  const data = await response.json();
 
-  return parseInt(response.data.lastHeight);
+  return parseInt(data.lastHeight);
 }
 
 export interface ValidatorStatsResponse {
@@ -31,26 +30,27 @@ export interface ValidatorStatsResponse {
   validatorPubkey: string;
 }
 
-export async function getValidatorStats(
-  fromHeight: number,
-  toHeight: number
-) {
+export async function getValidatorStats(fromHeight: number, toHeight: number) {
   try {
-    const response = await axios.get(
+    const response = await fetch(
       `${API_URL}/v1/validator_stats?from_height=${fromHeight}&to_height=${toHeight}`
     );
+    const data = await response.json();
 
-    return response.data.validatorStats.reduce(
-        (acc: Record<string, string>, item: ValidatorStatsResponse) => {
-            acc[item.validatorPubkey] = item.averageMev;
-            return acc;
-        }, {}
+    return data.validatorStats.reduce(
+      (acc: Record<string, string>, item: ValidatorStatsResponse) => {
+        acc[item.validatorPubkey] = item.averageMev;
+        return acc;
+      },
+      {}
     );
   } catch {
-    return [{
-      averageMev: "0",
-      validatorPubkey: "",
-    }];
+    return [
+      {
+        averageMev: "0",
+        validatorPubkey: "",
+      },
+    ];
   }
 }
 
@@ -91,9 +91,10 @@ export async function getRawMEV(params: DatapointRequest) {
     query.append("with_block_info", params.withBlockInfo.toString());
   }
 
-  const response = await axios.get(`${API_URL}/v1/raw_mev?${query.toString()}`);
+  const response = await fetch(`${API_URL}/v1/raw_mev?${query.toString()}`);
+  const data = await response.json();
 
-  return response.data.datapoints as Datapoint[];
+  return data.datapoints as Datapoint[];
 }
 
 export function useValidatorsWithStatsQuery(blocks: number) {
@@ -163,7 +164,8 @@ export function useCumulativeMEVQuery() {
   return useQuery({
     queryKey: ["cumulative-mev"],
     queryFn: async () => {
-      const { data } = await axios.get("/api/main-chart-data");
+      const response = await fetch("/api/main-chart-data");
+      const data = await response.json();
 
       return data as {
         validator: string;
