@@ -108,12 +108,13 @@ export async function getRawMEV(params: DatapointRequest) {
 }
 
 export function useValidatorsWithStatsQuery(blocks: number) {
+  const { data: toHeight } = useLatestHeightQuery();
+  const { data: validators } = useValidatorsQuery();
   return useQuery({
     queryKey: ["validators-with-stats", blocks],
     queryFn: async () => {
-      const validators = await getValidators();
-
-      const toHeight = await getLatestHeight();
+      if (!toHeight) return;
+      if (!validators) return;
 
       let fromHeight = toHeight - blocks;
       if (fromHeight < 0) {
@@ -129,6 +130,7 @@ export function useValidatorsWithStatsQuery(blocks: number) {
         }))
         .sort((a, b) => parseFloat(b.averageMev) - parseFloat(a.averageMev));
     },
+    enabled: !!toHeight && !!validators,
     keepPreviousData: true,
   });
 }
@@ -148,10 +150,11 @@ export function useRawMEVQuery(
   blocks: number,
   withBlockInfo: boolean
 ) {
+  const { data: toHeight } = useLatestHeightQuery();
   return useQuery({
     queryKey: ["raw-mev", proposer, blocks],
     queryFn: async () => {
-      const toHeight = await getLatestHeight();
+      if (!toHeight) return;
 
       let fromHeight = toHeight - blocks;
       if (fromHeight < 0) {
@@ -166,7 +169,7 @@ export function useRawMEVQuery(
         withBlockInfo: withBlockInfo,
       });
     },
-    enabled: proposer !== "",
+    enabled: proposer !== "" && !!toHeight,
   });
 }
 
