@@ -29,40 +29,7 @@ import {
   Tooltip as ChartTooltip,
 } from "recharts";
 import Head from "next/head";
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
-        {payload
-          .sort((a: any, b: any) => b.value - a.value)
-          .slice(0, 10)
-          .map((item: any, index: number) => {
-            return (
-              <div
-                className={`flex items-center gap-4 ${
-                  item.stroke === "#b51717" ? "text-[#b51717]" : null
-                }`}
-                key={index}
-              >
-                <p className="flex-1 max-w-[100px] truncate">
-                  {item.dataKey}:{" "}
-                </p>
-                <p>
-                  {new Intl.NumberFormat("en-US", {
-                    currency: "USD",
-                    style: "currency",
-                  }).format(item.value as number)}{" "}
-                </p>
-              </div>
-            );
-          })}
-      </div>
-    );
-  }
-
-  return null;
-};
+import CustomTooltip from "@/components/CustomTooltip";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
