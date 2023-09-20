@@ -25,6 +25,16 @@ export async function getLatestHeight() {
   return parseInt(data.lastHeight);
 }
 
+export function useLatestHeightQuery() {
+  return useQuery({
+    queryKey: ["latest-height"],
+    queryFn: async () => {
+      return getLatestHeight();
+    },
+    keepPreviousData: true,
+  });
+}
+
 export interface ValidatorStatsResponse {
   averageMev: string;
   validatorPubkey: string;
