@@ -1,8 +1,7 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const API_URL = "https://zygis-dydx.ngrok.app";
-// const API_URL = "https://dydx-mev-api-dev.skip.money";
+const API_URL = "https://dydx-mev-api-dev.skip.money";
 // const API_URL = "https://dydx-mev-api-prod.skip.money";
 
 export interface Validator {
