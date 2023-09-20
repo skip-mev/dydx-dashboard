@@ -28,7 +28,7 @@ export async function getLatestHeight() {
   return parseInt(response.data.lastHeight);
 }
 
-export interface ValidatorStats {
+export interface ValidatorStatsResponse {
   averageMev: string;
   validatorPubkey: string;
 }
@@ -43,13 +43,11 @@ export async function getValidatorStats(
     );
 
     return response.data.validatorStats.reduce(
-        (acc, item) => {
-            acc[item.validatorPubkey] = item.averageMev;
+        (acc: Map<string, string>, item: ValidatorStatsResponse) => {
+            acc.set(item.validatorPubkey, item.averageMev);
             return acc;
         }, {}
     );
-
-    return response.data.validatorStats as ValidatorStats[];
   } catch {
     return [{
       averageMev: "0",
