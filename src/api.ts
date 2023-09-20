@@ -111,10 +111,12 @@ export function useValidatorsWithStatsQuery(blocks: number) {
 
       const stats = await getValidatorStats(fromHeight, toHeight);
 
-      return validators.map((validator) => ({
-        ...validator,
-        averageMev: stats[validator.pubkey] || 0,
-      }));
+      return validators
+        .map((validator) => ({
+          ...validator,
+          averageMev: stats[validator.pubkey] || 0,
+        }))
+        .sort((a, b) => parseFloat(b.averageMev) - parseFloat(a.averageMev));
     },
     keepPreviousData: true,
   });
