@@ -145,31 +145,17 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useRawMEVQuery(
-  proposer: string,
-  blocks: number,
-  withBlockInfo: boolean
-) {
-  const { data: toHeight } = useLatestHeightQuery();
+export function useRawMEVQuery(proposer: string, withBlockInfo: boolean) {
   return useQuery({
-    queryKey: ["raw-mev", proposer, blocks],
+    queryKey: ["raw-mev", proposer, withBlockInfo],
     queryFn: async () => {
-      if (!toHeight) return;
-
-      let fromHeight = toHeight - blocks;
-      if (fromHeight < 0) {
-        fromHeight = 1;
-      }
-
       return getRawMEV({
         proposers: [proposer],
-        from: fromHeight,
-        to: toHeight,
         limit: 1000,
         withBlockInfo: withBlockInfo,
       });
     },
-    enabled: proposer !== "" && !!toHeight,
+    enabled: proposer !== "",
   });
 }
 
