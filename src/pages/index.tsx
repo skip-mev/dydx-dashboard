@@ -226,11 +226,6 @@ export default function Home() {
                       <ChartTooltip content={<CustomTooltip />} />
                       {filteredValidators &&
                         filteredValidators
-                          // .sort(
-                          //   (a, b) =>
-                          //     parseFloat(b.averageMev) -
-                          //     parseFloat(a.averageMev)
-                          // )
                           .map((validator) => {
                             return (
                               <Line
