@@ -64,11 +64,11 @@ export default function Home() {
     return validators?.filter((validator) => validator.stake !== "0");
   }, [validators]);
 
-  const [includeJailed, setIncludeJailed] = useState(false);
+  const [hideInactive, setHideInactive] = useState(true);
 
   const filteredValidators = useMemo(() => {
-    return includeJailed ? validators : activeValidators;
-  }, [activeValidators, includeJailed, validators]);
+    return hideInactive ? activeValidators : validators;
+  }, [activeValidators, hideInactive, validators]);
 
   useEffect(() => {
     if (filteredValidators && selectedValidators.length === 0) {
@@ -334,18 +334,15 @@ export default function Home() {
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
               <div className="flex items-center gap-1">
-                <label
-                  className="text-sm text-white/50"
-                  htmlFor="inlcudeJailed"
-                >
-                  Include jailed:
+                <label className="text-sm text-white/50" htmlFor="hideInactive">
+                  Exclude inactive validators:
                 </label>
                 <Checkbox.Root
-                  checked={includeJailed}
+                  checked={hideInactive}
                   className="flex h-5 w-5 items-center justify-center rounded-sm bg-white/10 hover:bg-white/20"
-                  id="inlcudeJailed"
+                  id="hideInactive"
                   onCheckedChange={(v) =>
-                    typeof v === "boolean" && setIncludeJailed(v)
+                    typeof v === "boolean" && setHideInactive(v)
                   }
                 >
                   <Checkbox.Indicator className="text-yellow-500">
