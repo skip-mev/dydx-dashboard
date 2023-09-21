@@ -120,9 +120,10 @@ export async function getRawMEV(params: RawMEVRequest) {
 }
 
 export async function getCumulativeMEV(params: CumulativeMEVRequest) {
-  const response = await axios.get(`${API_URL}/v1/cumulative_mev?proposer=${params.proposer}&limit=${params.limit}&every=${params.every}&probabilityThreshold=${params.probabilityThreshold}`);
+  const response = await fetch(`${API_URL}/v1/cumulative_mev?proposer=${params.proposer}&limit=${params.limit}&every=${params.every}&probabilityThreshold=${params.probabilityThreshold}`);
+  const data = await response.json();
 
-  return response.data.datapoints as CumulativeDatapoint[];
+  return data.datapoints as CumulativeDatapoint[];
 }
 
 export function useValidatorsWithStatsQuery(blocks: number) {
