@@ -145,11 +145,7 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useRawMEVQuery(
-  proposer: string,
-  withBlockInfo: boolean
-) {
-  const { data: toHeight } = useLatestHeightQuery();
+export function useRawMEVQuery(proposer: string, withBlockInfo: boolean) {
   return useQuery({
     queryKey: ["raw-mev", proposer, withBlockInfo],
     queryFn: async () => {
@@ -159,7 +155,7 @@ export function useRawMEVQuery(
         withBlockInfo: withBlockInfo,
       });
     },
-    enabled: proposer !== "" && !!toHeight,
+    enabled: proposer !== "",
   });
 }
 
