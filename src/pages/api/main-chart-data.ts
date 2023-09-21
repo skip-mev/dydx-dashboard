@@ -21,7 +21,6 @@ export default async function handler(req: NextRequest) {
   );
 
   const allData = await Promise.all(promises);
-  console.log(allData)
   const cumulativeMEV = validators.map((validator, index) => {
     return {
       validator: validator.moniker,
