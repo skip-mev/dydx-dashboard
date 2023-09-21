@@ -28,6 +28,10 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from "recharts";
+import {
+  MAIN_CHART_DATAPOINT_LIMIT,
+  MAIN_CHART_DATAPOINT_EVERY,
+} from "@/constants";
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
 import * as Checkbox from "@radix-ui/react-checkbox";
@@ -94,9 +98,9 @@ export default function Home() {
       };
     }, {} as Record<string, number[]>);
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < MAIN_CHART_DATAPOINT_LIMIT; i++) {
       const point = {
-        key: i + 1,
+        key: (i + 1) * MAIN_CHART_DATAPOINT_EVERY,
       };
 
       for (const { validator } of cumulativeMEV) {
