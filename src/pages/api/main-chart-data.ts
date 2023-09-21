@@ -1,11 +1,13 @@
 // next js api route
 import { cumulativeDatapoints, getRawMEV, getValidators } from "@/api";
-import { NextApiRequest, NextApiResponse } from "next";
+import { PageConfig } from "next";
+import { NextRequest } from "next/server";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export const config: PageConfig = {
+  runtime: "edge",
+};
+
+export default async function handler(req: NextRequest) {
   const validators = await getValidators();
 
   const promises = validators.map((validator) =>
@@ -24,5 +26,10 @@ export default async function handler(
     };
   });
 
-  res.status(200).json(cumulativeMEV);
+  return new Response(JSON.stringify(cumulativeMEV), {
+    headers: {
+      "content-type": "application/json",
+      "cache-control": "max-age=1, s-maxage=1, stale-while-revalidate=59",
+    },
+  });
 }

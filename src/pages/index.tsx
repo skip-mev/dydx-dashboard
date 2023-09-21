@@ -29,40 +29,8 @@ import {
   Tooltip as ChartTooltip,
 } from "recharts";
 import Head from "next/head";
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
-        {payload
-          .sort((a: any, b: any) => b.value - a.value)
-          .slice(0, 10)
-          .map((item: any, index: number) => {
-            return (
-              <div
-                className={`flex items-center gap-4 ${
-                  item.stroke === "#b51717" ? "text-[#b51717]" : null
-                }`}
-                key={index}
-              >
-                <p className="flex-1 max-w-[100px] truncate">
-                  {item.dataKey}:{" "}
-                </p>
-                <p>
-                  {new Intl.NumberFormat("en-US", {
-                    currency: "USD",
-                    style: "currency",
-                  }).format(item.value as number)}{" "}
-                </p>
-              </div>
-            );
-          })}
-      </div>
-    );
-  }
-
-  return null;
-};
+import CustomTooltip from "@/components/CustomTooltip";
+import * as Checkbox from "@radix-ui/react-checkbox";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -92,16 +60,21 @@ export default function Home() {
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
 
+  const activeValidators = useMemo(() => {
+    return validators?.filter((validator) => validator.stake !== "0");
+  }, [validators]);
+
+  const [hideInactive, setHideInactive] = useState(true);
+
+  const filteredValidators = useMemo(() => {
+    return hideInactive ? activeValidators : validators;
+  }, [activeValidators, hideInactive, validators]);
+
   useEffect(() => {
-    if (validators && selectedValidators.length === 0) {
-      setSelectedValidators([
-        ...selectedValidators,
-        [...validators].sort(
-          (a, b) => parseInt(b.averageMev) - parseInt(a.averageMev)
-        )[0],
-      ]);
+    if (filteredValidators && selectedValidators.length === 0) {
+      setSelectedValidators([filteredValidators[0]]);
     }
-  }, [selectedValidators, validators]);
+  }, [selectedValidators, filteredValidators]);
 
   const { data: cumulativeMEV } = useCumulativeMEVQuery();
 
@@ -140,21 +113,21 @@ export default function Home() {
   }, [cumulativeMEV]);
 
   const totalStake = useMemo(() => {
-    if (!validators) {
+    if (!filteredValidators) {
       return 0;
     }
 
-    return validators.reduce((acc, validator) => {
+    return filteredValidators.reduce((acc, validator) => {
       return acc + parseFloat(ethers.formatUnits(validator.stake, 6));
     }, 0);
-  }, [validators]);
+  }, [filteredValidators]);
 
   const sortedValidators = useMemo(() => {
-    if (!validators) {
+    if (!filteredValidators) {
       return undefined;
     }
 
-    return [...validators]
+    return filteredValidators
       .sort((a, b) => {
         if (sortBy === "validator" && sortDirection === "asc") {
           return a.moniker.localeCompare(b.moniker);
@@ -185,7 +158,7 @@ export default function Home() {
           .toLowerCase()
           .includes(searchValue.toLowerCase());
       });
-  }, [searchValue, sortBy, sortDirection, validators]);
+  }, [filteredValidators, searchValue, sortBy, sortDirection]);
 
   return (
     <Layout>
@@ -251,59 +224,53 @@ export default function Home() {
                         }}
                       />
                       <ChartTooltip content={<CustomTooltip />} />
-                      {validators &&
-                        validators
-                          .sort(
-                            (a, b) =>
-                              parseFloat(b.averageMev) -
-                              parseFloat(a.averageMev)
-                          )
-                          .map((validator) => {
-                            return (
-                              <Line
-                                key={validator.pubkey}
-                                dot={false}
-                                dataKey={validator.moniker}
-                                stroke={
-                                  selectedValidators.includes(validator)
-                                    ? "#b51717"
-                                    : validator.moniker ===
-                                      highlightedValidator?.moniker
-                                    ? "#34F3FF"
-                                    : "#8884d8"
-                                }
-                                isAnimationActive={false}
-                                opacity={
-                                  selectedValidators.includes(validator) ||
-                                  validator.moniker ===
+                      {filteredValidators &&
+                        filteredValidators.map((validator) => {
+                          return (
+                            <Line
+                              key={validator.pubkey}
+                              dot={false}
+                              dataKey={validator.moniker}
+                              stroke={
+                                selectedValidators.includes(validator)
+                                  ? "#b51717"
+                                  : validator.moniker ===
                                     highlightedValidator?.moniker
-                                    ? 1
-                                    : 0.3
+                                  ? "#34F3FF"
+                                  : "#8884d8"
+                              }
+                              isAnimationActive={false}
+                              opacity={
+                                selectedValidators.includes(validator) ||
+                                validator.moniker ===
+                                  highlightedValidator?.moniker
+                                  ? 1
+                                  : 0.3
+                              }
+                              onClick={() => {
+                                if (selectedValidators.includes(validator)) {
+                                  setSelectedValidators(
+                                    selectedValidators.filter(
+                                      (v) => v.pubkey !== validator.pubkey
+                                    )
+                                  );
+                                } else {
+                                  setSelectedValidators([
+                                    ...selectedValidators,
+                                    validator,
+                                  ]);
                                 }
-                                onClick={() => {
-                                  if (selectedValidators.includes(validator)) {
-                                    setSelectedValidators(
-                                      selectedValidators.filter(
-                                        (v) => v.pubkey !== validator.pubkey
-                                      )
-                                    );
-                                  } else {
-                                    setSelectedValidators([
-                                      ...selectedValidators,
-                                      validator,
-                                    ]);
-                                  }
-                                }}
-                              ></Line>
-                            );
-                          })}
+                              }}
+                            ></Line>
+                          );
+                        })}
                     </LineChart>
                   </ResponsiveContainer>
                   <p className="font-mono text-center text-sm pt-4">
                     Past Proposed Blocks
                   </p>
                   <div className="flex justify-center gap-2 flex-wrap pt-8">
-                    {validators?.map((validator) => (
+                    {filteredValidators?.map((validator) => (
                       <button
                         className={`${
                           selectedValidators.includes(validator)
@@ -365,6 +332,36 @@ export default function Home() {
               />
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
+              <div className="flex items-center gap-1">
+                <label className="text-sm text-white/50" htmlFor="hideInactive">
+                  Exclude inactive validators:
+                </label>
+                <Checkbox.Root
+                  checked={hideInactive}
+                  className="flex h-5 w-5 items-center justify-center rounded-sm bg-white/10 hover:bg-white/20"
+                  id="hideInactive"
+                  onCheckedChange={(v) =>
+                    typeof v === "boolean" && setHideInactive(v)
+                  }
+                >
+                  <Checkbox.Indicator className="text-yellow-500">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </Checkbox.Indicator>
+                </Checkbox.Root>
+              </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Timeframe:</p>
                 <Select

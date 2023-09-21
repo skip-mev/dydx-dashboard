@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { API_URL } from "./constants";
 
@@ -13,17 +12,27 @@ export interface GetValidatorsResponse {
 }
 
 export async function getValidators(): Promise<Validator[]> {
-  const response = await axios.get(`${API_URL}/v1/validator`);
-
-  const { validators } = response.data as GetValidatorsResponse;
+  const response = await fetch(`${API_URL}/v1/validator`);
+  const { validators } = (await response.json()) as GetValidatorsResponse;
 
   return validators;
 }
 
 export async function getLatestHeight() {
-  const response = await axios.get(`${API_URL}/v1/block_range`);
+  const response = await fetch(`${API_URL}/v1/block_range`);
+  const data = await response.json();
 
-  return parseInt(response.data.lastHeight);
+  return parseInt(data.lastHeight);
+}
+
+export function useLatestHeightQuery() {
+  return useQuery({
+    queryKey: ["latest-height"],
+    queryFn: async () => {
+      return getLatestHeight();
+    },
+    keepPreviousData: true,
+  });
 }
 
 export interface ValidatorStatsResponse {
@@ -31,26 +40,27 @@ export interface ValidatorStatsResponse {
   validatorPubkey: string;
 }
 
-export async function getValidatorStats(
-  fromHeight: number,
-  toHeight: number
-) {
+export async function getValidatorStats(fromHeight: number, toHeight: number) {
   try {
-    const response = await axios.get(
+    const response = await fetch(
       `${API_URL}/v1/validator_stats?from_height=${fromHeight}&to_height=${toHeight}`
     );
+    const data = await response.json();
 
-    return response.data.validatorStats.reduce(
-        (acc: Record<string, string>, item: ValidatorStatsResponse) => {
-            acc[item.validatorPubkey] = item.averageMev;
-            return acc;
-        }, {}
+    return data.validatorStats.reduce(
+      (acc: Record<string, string>, item: ValidatorStatsResponse) => {
+        acc[item.validatorPubkey] = item.averageMev;
+        return acc;
+      },
+      {}
     );
   } catch {
-    return [{
-      averageMev: "0",
-      validatorPubkey: "",
-    }];
+    return [
+      {
+        averageMev: "0",
+        validatorPubkey: "",
+      },
+    ];
   }
 }
 
@@ -91,18 +101,20 @@ export async function getRawMEV(params: DatapointRequest) {
     query.append("with_block_info", params.withBlockInfo.toString());
   }
 
-  const response = await axios.get(`${API_URL}/v1/raw_mev?${query.toString()}`);
+  const response = await fetch(`${API_URL}/v1/raw_mev?${query.toString()}`);
+  const data = await response.json();
 
-  return response.data.datapoints as Datapoint[];
+  return data.datapoints as Datapoint[];
 }
 
 export function useValidatorsWithStatsQuery(blocks: number) {
+  const { data: toHeight } = useLatestHeightQuery();
+  const { data: validators } = useValidatorsQuery();
   return useQuery({
     queryKey: ["validators-with-stats", blocks],
     queryFn: async () => {
-      const validators = await getValidators();
-
-      const toHeight = await getLatestHeight();
+      if (!toHeight) return;
+      if (!validators) return;
 
       let fromHeight = toHeight - blocks;
       if (fromHeight < 0) {
@@ -111,11 +123,14 @@ export function useValidatorsWithStatsQuery(blocks: number) {
 
       const stats = await getValidatorStats(fromHeight, toHeight);
 
-      return validators.map((validator) => ({
-        ...validator,
-        averageMev: stats[validator.pubkey] || 0,
-      }));
+      return validators
+        .map((validator) => ({
+          ...validator,
+          averageMev: stats[validator.pubkey] || 0,
+        }))
+        .sort((a, b) => parseFloat(b.averageMev) - parseFloat(a.averageMev));
     },
+    enabled: !!toHeight && !!validators,
     keepPreviousData: true,
   });
 }
@@ -135,10 +150,11 @@ export function useRawMEVQuery(
   blocks: number,
   withBlockInfo: boolean
 ) {
+  const { data: toHeight } = useLatestHeightQuery();
   return useQuery({
     queryKey: ["raw-mev", proposer, blocks],
     queryFn: async () => {
-      const toHeight = await getLatestHeight();
+      if (!toHeight) return;
 
       let fromHeight = toHeight - blocks;
       if (fromHeight < 0) {
@@ -153,7 +169,7 @@ export function useRawMEVQuery(
         withBlockInfo: withBlockInfo,
       });
     },
-    enabled: proposer !== "",
+    enabled: proposer !== "" && !!toHeight,
   });
 }
 
@@ -161,7 +177,8 @@ export function useCumulativeMEVQuery() {
   return useQuery({
     queryKey: ["cumulative-mev"],
     queryFn: async () => {
-      const { data } = await axios.get("/api/main-chart-data");
+      const response = await fetch("/api/main-chart-data");
+      const data = await response.json();
 
       return data as {
         validator: string;
