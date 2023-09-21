@@ -98,7 +98,7 @@ export default function Home() {
       };
     }, {} as Record<string, number[]>);
 
-    for (let i = 0; i < MAIN_CHART_DATAPOINT_LIMIT; i++) {
+    for (let i = 0; i < MAIN_CHART_DATAPOINT_LIMIT / MAIN_CHART_DATAPOINT_EVERY; i++) {
       const point = {
         key: (i + 1) * MAIN_CHART_DATAPOINT_EVERY,
       };
