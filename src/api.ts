@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { API_URL } from "./constants";
 import { useMemo } from "react";
+import {
+  API_URL,
+  MAIN_CHART_DATAPOINT_EVERY,
+  MAIN_CHART_DATAPOINT_LIMIT,
+  PROBABILITY_THRESHOLD,
+} from "./constants";
 import { fetcher } from "./lib/fetcher";
 import {
   ApiBlockRangeResponse,
@@ -85,15 +90,12 @@ export async function getRawMev(params: GetRawMevArgs) {
   if (params.from) {
     query.append("from_height", params.from.toString());
   }
-
   if (params.to) {
     query.append("to_height", params.to.toString());
   }
-
   if (params.limit) {
     query.append("limit", params.limit.toString());
   }
-
   if (params.withBlockInfo) {
     query.append("with_block_info", params.withBlockInfo.toString());
   }
@@ -232,4 +234,31 @@ export function cumulativeDatapoints(
       }, 0),
     };
   });
+}
+
+export async function getMainChartData() {
+  const validators = await getValidators();
+
+  const allData = await Promise.all(
+    validators.map((validator) => {
+      return getCumulativeMev({
+        proposer: validator.pubkey,
+        limit: MAIN_CHART_DATAPOINT_LIMIT,
+        every: MAIN_CHART_DATAPOINT_EVERY,
+        probabilityThreshold: PROBABILITY_THRESHOLD,
+      });
+    })
+  );
+
+  const data = validators.map(
+    (validator, index): MainChartData => ({
+      validator: validator.moniker,
+      cumulativeMev: allData[index].map(({ value }, index) => ({
+        key: index * MAIN_CHART_DATAPOINT_EVERY,
+        value,
+      })),
+    })
+  );
+
+  return data;
 }
