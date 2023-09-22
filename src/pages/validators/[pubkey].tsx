@@ -38,7 +38,10 @@ function ValidatorPage() {
     return validators.find((validator) => validator.pubkey === pubkey);
   }, [validators, pubkey]);
 
-  const { data: datapoints } = useRawMEVQuery(validator?.pubkey || "", true);
+  const { data: datapoints } = useRawMEVQuery({
+    proposer: validator?.pubkey || "",
+    withBlockInfo: true,
+  });
 
   const formattedDatapoints = useMemo(() => {
     if (!datapoints) {

@@ -35,6 +35,7 @@ import {
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import { ValidatorWithStats } from "@/types/base";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -44,22 +45,11 @@ export default function Home() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const [selectedValidators, setSelectedValidators] = useState<
-    | {
-        averageMev: string;
-        moniker: string;
-        pubkey: string;
-        stake: string;
-      }[]
+    ValidatorWithStats[]
   >([]);
 
   const [highlightedValidator, setHighlightedValidator] = useState<
-    | {
-        averageMev: string;
-        moniker: string;
-        pubkey: string;
-        stake: string;
-      }
-    | undefined
+    ValidatorWithStats | undefined
   >(undefined);
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
@@ -92,7 +82,7 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: data.cumulativeMEV.map((v) =>
+        [data.validator]: data.cumulativeMev.map((v) =>
           parseFloat(ethers.formatUnits(v.value.toFixed(0), 6))
         ),
       };
