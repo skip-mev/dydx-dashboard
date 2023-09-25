@@ -1,8 +1,4 @@
-import {
-  useNormalizedMEVQuery,
-  useRawMEVQuery,
-  useValidatorsQuery,
-} from "@/api";
+import { useRawMEVQuery, useValidatorsQuery } from "@/api";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import { ethers } from "ethers";
@@ -11,10 +7,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import {
-  CartesianGrid,
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -42,33 +38,27 @@ function ValidatorPage() {
     return validators.find((validator) => validator.pubkey === pubkey);
   }, [validators, pubkey]);
 
-  const { data: validatorMEV } = useNormalizedMEVQuery(
-    validator?.pubkey || "",
-    43200
-  );
+  const { data: datapoints } = useRawMEVQuery(validator?.pubkey || "", true);
 
-  const datapoints = useMemo(() => {
-    if (!validatorMEV) {
+  const formattedDatapoints = useMemo(() => {
+    if (!datapoints) {
       return [];
     }
 
-    return [...validatorMEV].map((datapoint, index) => {
-      return {
-        key: index + 1,
-        block: datapoint.height,
-        value: datapoint.value * 10000,
-      };
-    });
-  }, [validatorMEV]);
+    return datapoints.map((datapoint, index) => ({
+      ...datapoint,
+      key: index + 1,
+      value: parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6)),
+      probability: datapoint.probability * 100,
+    }));
+  }, [datapoints]);
 
-  const { data: rawMEV } = useRawMEVQuery(validator?.pubkey || "", 43200);
-
-  const rawMEVDatapoints = useMemo(() => {
-    if (!rawMEV) {
+  const cumulativeDatapoints = useMemo(() => {
+    if (!datapoints) {
       return [];
     }
 
-    const values = [...rawMEV].reverse().map((datapoint, _) => {
+    const values = [...datapoints].map((datapoint, _) => {
       return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
@@ -78,9 +68,10 @@ function ValidatorPage() {
         value: values.slice(0, index + 1).reduce((acc, value) => {
           return acc + value;
         }, 0),
+        block: datapoints[index].height,
       };
     });
-  }, [rawMEV]);
+  }, [datapoints]);
 
   return (
     <Fragment>
@@ -122,24 +113,24 @@ function ValidatorPage() {
             {validator && validator.moniker}
           </h1>
         </div>
-        {validatorMEV && rawMEV && (
+        {datapoints && (
           <div className="space-y-12 pb-12">
             <div>
               <div className="pb-4">
                 <p className="font-mono font-bold text-xl">
-                  Normalized Orderbook Discrepancy
+                  Orderbook Discrepancy
                 </p>
               </div>
               <Card className="p-9 pl-4 py-8">
                 <div className="relative">
-                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[80px] font-mono">
-                    Orderbook Discrepancy (bps)
+                  <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[60px] font-mono">
+                    Orderbook Discrepancy ($)
                   </div>
-                  {validatorMEV && (
+                  {formattedDatapoints && (
                     <ResponsiveContainer width="100%" height={296}>
                       <LineChart
-                        data={datapoints}
-                        margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                        data={formattedDatapoints}
+                        margin={{ top: 5, right: 0, left: 50, bottom: 5 }}
                         syncId="chart"
                       >
                         <XAxis
@@ -166,12 +157,37 @@ function ValidatorPage() {
                             fontSize: 13,
                             opacity: 0.8,
                           }}
+                          yAxisId="left"
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          padding={{ top: 20, bottom: 20 }}
+                          style={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
+                          yAxisId="right"
+                          orientation="right"
                         />
                         <Line
                           dot={false}
                           dataKey="value"
-                          stroke="#8884d8"
+                          stroke="#17b57f"
                           isAnimationActive={false}
+                          yAxisId="left"
+                          name="Orderbook Discrepancy ($)"
+                        />
+                        <Legend
+                          verticalAlign="top"
+                          wrapperStyle={{
+                            fill: "#fff",
+                            fontFamily: "monospace",
+                            fontSize: 13,
+                            opacity: 0.8,
+                          }}
                         />
                         <Tooltip
                           contentStyle={{
@@ -182,18 +198,10 @@ function ValidatorPage() {
                           wrapperClassName="font-mono text-sm"
                           labelFormatter={(label) => {
                             return `Block: ${
-                              datapoints.find(
+                              formattedDatapoints.find(
                                 (datapoint) => datapoint.key === label
-                              )?.block
+                              )?.height
                             }`;
-                          }}
-                          formatter={(value) => {
-                            return [
-                              `${new Intl.NumberFormat("en-US", {}).format(
-                                value as number
-                              )} bps`,
-                              "Orderbook Discrepancy",
-                            ];
                           }}
                         />
                       </LineChart>
@@ -216,11 +224,11 @@ function ValidatorPage() {
                   <div className="absolute -rotate-90 translate-y-[140px] -translate-x-[120px] font-mono">
                     Cumulative Orderbook Discrepancy ($)
                   </div>
-                  {validatorMEV && (
+                  {cumulativeDatapoints && (
                     <ResponsiveContainer width="100%" height={296}>
                       <LineChart
-                        data={rawMEVDatapoints}
-                        margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                        data={cumulativeDatapoints}
+                        margin={{ top: 5, right: 60, left: 50, bottom: 5 }}
                         syncId="chart"
                       >
                         <XAxis
@@ -263,7 +271,7 @@ function ValidatorPage() {
                           wrapperClassName="font-mono text-sm"
                           labelFormatter={(label) => {
                             return `Block: ${
-                              datapoints.find(
+                              cumulativeDatapoints.find(
                                 (datapoint) => datapoint.key === label
                               )?.block
                             }`;

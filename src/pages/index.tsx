@@ -2,10 +2,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
-import {
-  useCumulativeNormalizedMEVQuery,
-  useValidatorsWithStatsQuery,
-} from "@/api";
+import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/api";
 import Card from "@/components/Card";
 import {
   Table,
@@ -31,54 +28,13 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from "recharts";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import {
+  MAIN_CHART_DATAPOINT_LIMIT,
+  MAIN_CHART_DATAPOINT_EVERY,
+} from "@/constants";
 import Head from "next/head";
-
-function leftPadArray(array: number[], length: number) {
-  if (array.length >= length) {
-    return array;
-  }
-
-  const n = length - array.length;
-
-  const a = Array.from({ length: n }).fill(0) as number[];
-
-  return a.concat(array);
-}
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
-        {payload
-          .sort((a: any, b: any) => b.value - a.value)
-          .slice(0, 10)
-          .map((item: any, index: number) => {
-            return (
-              <div
-                className={`flex items-center gap-4 ${
-                  item.stroke === "#17b57f" ? "text-[#17b57f]" : null
-                }`}
-                key={index}
-              >
-                <p className="flex-1 max-w-[100px] truncate">
-                  {item.dataKey}:{" "}
-                </p>
-                <p>
-                  {new Intl.NumberFormat("en-US", {}).format(
-                    item.value as number
-                  )}{" "}
-                  bps
-                </p>
-              </div>
-            );
-          })}
-      </div>
-    );
-  }
-
-  return null;
-};
+import CustomTooltip from "@/components/CustomTooltip";
+import * as Checkbox from "@radix-ui/react-checkbox";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -90,7 +46,6 @@ export default function Home() {
   const [selectedValidators, setSelectedValidators] = useState<
     | {
         averageMev: string;
-        averageNormalizedMev: number;
         moniker: string;
         pubkey: string;
         stake: string;
@@ -100,7 +55,6 @@ export default function Home() {
   const [highlightedValidator, setHighlightedValidator] = useState<
     | {
         averageMev: string;
-        averageNormalizedMev: number;
         moniker: string;
         pubkey: string;
         stake: string;
@@ -110,18 +64,23 @@ export default function Home() {
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
 
-  useEffect(() => {
-    if (validators && selectedValidators.length === 0) {
-      setSelectedValidators([
-        ...selectedValidators,
-        [...validators].sort(
-          (a, b) => b.averageNormalizedMev - a.averageNormalizedMev
-        )[0],
-      ]);
-    }
-  }, [selectedValidators, validators]);
+  const activeValidators = useMemo(() => {
+    return validators?.filter((validator) => validator.stake !== "0");
+  }, [validators]);
 
-  const { data: cumulativeMEV } = useCumulativeNormalizedMEVQuery();
+  const [hideInactive, setHideInactive] = useState(true);
+
+  const filteredValidators = useMemo(() => {
+    return hideInactive ? activeValidators : validators;
+  }, [activeValidators, hideInactive, validators]);
+
+  useEffect(() => {
+    if (filteredValidators && selectedValidators.length === 0) {
+      setSelectedValidators([filteredValidators[0]]);
+    }
+  }, [selectedValidators, filteredValidators]);
+
+  const { data: cumulativeMEV } = useCumulativeMEVQuery();
 
   const chartData = useMemo(() => {
     if (!cumulativeMEV) {
@@ -133,13 +92,15 @@ export default function Home() {
     const validatorData = cumulativeMEV.reduce((acc, data) => {
       return {
         ...acc,
-        [data.validator]: data.cumulativeNormalizedMEV.map((v) => v.value),
+        [data.validator]: data.cumulativeMEV.map((v) =>
+          parseFloat(ethers.formatUnits(v.value.toFixed(0), 6))
+        ),
       };
     }, {} as Record<string, number[]>);
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < MAIN_CHART_DATAPOINT_LIMIT / MAIN_CHART_DATAPOINT_EVERY; i++) {
       const point = {
-        key: i + 1,
+        key: (i + 1) * MAIN_CHART_DATAPOINT_EVERY,
       };
 
       for (const { validator } of cumulativeMEV) {
@@ -156,21 +117,21 @@ export default function Home() {
   }, [cumulativeMEV]);
 
   const totalStake = useMemo(() => {
-    if (!validators) {
+    if (!filteredValidators) {
       return 0;
     }
 
-    return validators.reduce((acc, validator) => {
+    return filteredValidators.reduce((acc, validator) => {
       return acc + parseFloat(ethers.formatUnits(validator.stake, 6));
     }, 0);
-  }, [validators]);
+  }, [filteredValidators]);
 
   const sortedValidators = useMemo(() => {
-    if (!validators) {
+    if (!filteredValidators) {
       return undefined;
     }
 
-    return [...validators]
+    return filteredValidators
       .sort((a, b) => {
         if (sortBy === "validator" && sortDirection === "asc") {
           return a.moniker.localeCompare(b.moniker);
@@ -183,13 +144,6 @@ export default function Home() {
         if (sortBy === "averageMev") {
           const aMev = parseFloat(ethers.formatUnits(a.averageMev, 6));
           const bMev = parseFloat(ethers.formatUnits(b.averageMev, 6));
-
-          return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
-        }
-
-        if (sortBy === "averageNormalizedMev") {
-          const aMev = a.averageNormalizedMev;
-          const bMev = b.averageNormalizedMev;
 
           return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
         }
@@ -208,7 +162,7 @@ export default function Home() {
           .toLowerCase()
           .includes(searchValue.toLowerCase());
       });
-  }, [searchValue, sortBy, sortDirection, validators]);
+  }, [filteredValidators, searchValue, sortBy, sortDirection]);
 
   return (
     <Layout>
@@ -228,9 +182,7 @@ export default function Home() {
               <span className="text-4xl leading-[32px] font-black">/</span>
               <img className="h-8" src="/skip-logo.svg" alt="" />
             </div>
-            <p className="font-mono font-bold text-xl">
-              Order Book Discrepancy
-            </p>
+            <p className="font-mono font-bold text-xl">Orderbook Discrepancy</p>
           </div>
         </div>
         <div>
@@ -243,8 +195,8 @@ export default function Home() {
               {chartData.length === 0 && <div className="h-[300px] w-full" />}
               {chartData.length > 0 && (
                 <Fragment>
-                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[115px] font-mono text-xs">
-                    Cumulative Order Book Discrepancy (bps)
+                  <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[110px] font-mono text-xs">
+                    Cumulative Orderbook Discrepancy ($)
                   </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
@@ -276,63 +228,58 @@ export default function Home() {
                         }}
                       />
                       <ChartTooltip content={<CustomTooltip />} />
-                      {validators &&
-                        validators
-                          .sort(
-                            (a, b) =>
-                              b.averageNormalizedMev - a.averageNormalizedMev
-                          )
-                          .map((validator) => {
-                            return (
-                              <Line
-                                key={validator.pubkey}
-                                dot={false}
-                                dataKey={validator.moniker}
-                                stroke={
-                                  selectedValidators.includes(validator)
-                                    ? "#17b57f"
-                                    : validator.moniker ===
-                                      highlightedValidator?.moniker
-                                    ? "#34F3FF"
-                                    : "#8884d8"
-                                }
-                                isAnimationActive={false}
-                                opacity={
-                                  selectedValidators.includes(validator) ||
-                                  validator.moniker ===
+                      {filteredValidators &&
+                        filteredValidators.map((validator) => {
+                          return (
+                            <Line
+                              key={validator.pubkey}
+                              dot={false}
+                              dataKey={validator.moniker}
+                              stroke={
+                                selectedValidators.includes(validator)
+                                  ? "#b51717"
+                                  : validator.moniker ===
                                     highlightedValidator?.moniker
-                                    ? 1
-                                    : 0.3
+                                  ? "#34F3FF"
+                                  : "#8884d8"
+                              }
+                              isAnimationActive={false}
+                              opacity={
+                                selectedValidators.includes(validator) ||
+                                validator.moniker ===
+                                  highlightedValidator?.moniker
+                                  ? 1
+                                  : 0.3
+                              }
+                              onClick={() => {
+                                if (selectedValidators.includes(validator)) {
+                                  setSelectedValidators(
+                                    selectedValidators.filter(
+                                      (v) => v.pubkey !== validator.pubkey
+                                    )
+                                  );
+                                } else {
+                                  setSelectedValidators([
+                                    ...selectedValidators,
+                                    validator,
+                                  ]);
                                 }
-                                onClick={() => {
-                                  if (selectedValidators.includes(validator)) {
-                                    setSelectedValidators(
-                                      selectedValidators.filter(
-                                        (v) => v.pubkey !== validator.pubkey
-                                      )
-                                    );
-                                  } else {
-                                    setSelectedValidators([
-                                      ...selectedValidators,
-                                      validator,
-                                    ]);
-                                  }
-                                }}
-                              ></Line>
-                            );
-                          })}
+                              }}
+                            ></Line>
+                          );
+                        })}
                     </LineChart>
                   </ResponsiveContainer>
                   <p className="font-mono text-center text-sm pt-4">
                     Past Proposed Blocks
                   </p>
                   <div className="flex justify-center gap-2 flex-wrap pt-8">
-                    {validators?.map((validator) => (
+                    {filteredValidators?.map((validator) => (
                       <button
                         className={`${
                           selectedValidators.includes(validator)
-                            ? "bg-[#17b57f]"
-                            : "bg-white/5 hover:bg-[#17b57f]"
+                            ? "bg-[#b51717]"
+                            : "bg-white/5 hover:bg-[#b51717]"
                         } text-xs py-1 px-2 rounded-md transition-colors`}
                         key={validator.pubkey}
                         onMouseOver={() => setHighlightedValidator(validator)}
@@ -390,6 +337,36 @@ export default function Home() {
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
               <div className="flex items-center gap-1">
+                <label className="text-sm text-white/50" htmlFor="hideInactive">
+                  Exclude inactive validators:
+                </label>
+                <Checkbox.Root
+                  checked={hideInactive}
+                  className="flex h-5 w-5 items-center justify-center rounded-sm bg-white/10 hover:bg-white/20"
+                  id="hideInactive"
+                  onCheckedChange={(v) =>
+                    typeof v === "boolean" && setHideInactive(v)
+                  }
+                >
+                  <Checkbox.Indicator className="text-yellow-500">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </Checkbox.Indicator>
+                </Checkbox.Root>
+              </div>
+              <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Timeframe:</p>
                 <Select
                   defaultValue="today"
@@ -423,9 +400,6 @@ export default function Home() {
                   <SelectContent>
                     <SelectItem value="validator">Validator</SelectItem>
                     <SelectItem value="averageMev">Avg. Discrepancy</SelectItem>
-                    <SelectItem value="averageNormalizedMev">
-                      Normalized Discrepancy
-                    </SelectItem>
                     <SelectItem value="stake">Stake Weight</SelectItem>
                   </SelectContent>
                 </Select>
@@ -482,31 +456,7 @@ export default function Home() {
                       Avg. Orderbook <br /> Discrepancy
                     </span>
                   </TableHead>
-                  <TableHead align="right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Tooltip.Provider>
-                        <Tooltip.Root delayDuration={0}>
-                          <Tooltip.Trigger asChild>
-                            <span className="underline">
-                              Normalized Orderbook <br /> Discrepancy (bps)
-                            </span>
-                          </Tooltip.Trigger>
-                          <Tooltip.Portal>
-                            <Tooltip.Content
-                              className="bg-[#151617] text-light/75 text-xs border border-zinc-800 rounded-md shadow-md font-sans w-[200px] p-4"
-                              sideOffset={5}
-                            >
-                              Abnormally high values might occur because of the
-                              difference in between observed and calculated
-                              volumes
-                              <Tooltip.Arrow className="TooltipArrow" />
-                            </Tooltip.Content>
-                          </Tooltip.Portal>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </div>
-                  </TableHead>
-                  <TableHead align="right">Stake Weight %</TableHead>
+                  <TableHead align="right">Stake Weight</TableHead>
                 </TableHeader>
                 <TableBody>
                   {!sortedValidators &&
@@ -537,8 +487,6 @@ export default function Home() {
                         ethers.formatUnits(validator.averageMev, 6)
                       );
 
-                      const averageNormalizedMev =
-                        validator.averageNormalizedMev * 10000;
                       return (
                         <TableRow key={validator.pubkey}>
                           <TableCell className="w-[400px] truncate">
@@ -566,9 +514,6 @@ export default function Home() {
                               style: "currency",
                               currency: "USD",
                             }).format(averageMev)}
-                          </TableCell>
-                          <TableCell align="right" className="w-[208px]">
-                            {averageNormalizedMev.toFixed(3)}
                           </TableCell>
                           <TableCell align="right" className="w-[208px]">
                             {stakePercent.toFixed(2)}%

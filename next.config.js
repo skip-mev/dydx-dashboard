@@ -1,43 +1,40 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+/**
+ * @type {import('next').NextConfig}
+ * @see https://nextjs.org/docs/pages/api-reference/next-config-js
+ */
+let nextConfig = {
   reactStrictMode: true,
+  redirects: async () => [],
+  rewrites: async () => [],
+  swcMinify: true,
 };
 
-module.exports = nextConfig;
-
-// Injected content via Sentry wizard below
-
+/** @see https://docs.sentry.io/platforms/javascript/guides/nextjs */
 const { withSentryConfig } = require("@sentry/nextjs");
 
-module.exports = withSentryConfig(
-  module.exports,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
+/**
+ * @type {Partial<import('@sentry/nextjs').SentryWebpackPluginOptions>}
+ * @see https://github.com/getsentry/sentry-webpack-plugin#options
+ */
+const sentryWebpackConfig = {
+  org: "skip-protocol",
+  project: "dydx-dashboard",
+  silent: true,
+};
 
-    // Suppresses source map uploading logs during build
-    silent: true,
+/**
+ * @type {import('@sentry/nextjs/types/config/types').UserSentryOptions}
+ * @see https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup
+ */
+const sentryOptions = {
+  disableLogger: true,
+  hideSourceMaps: false,
+  transpileClientSDK: true,
+  tunnelRoute: "/monitoring",
+  widenClientFileUpload: true,
+};
 
-    org: "skip-protocol",
-    project: "dydx-dashboard",
-  },
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+/** @see https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup */
+nextConfig = withSentryConfig(nextConfig, sentryWebpackConfig, sentryOptions);
 
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: false,
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-  }
-);
+module.exports = nextConfig;
