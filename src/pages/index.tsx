@@ -40,6 +40,7 @@ import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
 import { CheckIcon } from "@/components/icons/Check";
 import { SearchIcon } from "@/components/icons/Search";
 import { SortIcon } from "@/components/icons/Sort";
+import { usdIntl } from "@/lib/intl";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -438,10 +439,7 @@ export default function Home() {
                             </Link>
                           </TableCell>
                           <TableCell align="right" className="w-[208px]">
-                            {new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: "USD",
-                            }).format(averageMev)}
+                            {usdIntl.format(averageMev)}
                           </TableCell>
                           <TableCell align="right" className="w-[208px]">
                             {stakePercent.toFixed(2)}%

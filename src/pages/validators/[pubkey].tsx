@@ -17,6 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowLeftIcon } from "@/components/icons/ArrowLeft";
+import { usdIntl } from "@/lib/intl";
 
 function ValidatorPage() {
   const router = useRouter();
@@ -260,9 +261,7 @@ function ValidatorPage() {
                           }}
                           formatter={(value) => {
                             return [
-                              `$${new Intl.NumberFormat("en-US", {
-                                currency: "USD",
-                              }).format(value as number)}`,
+                              `${usdIntl.format(+value)}`,
                               "Orderbook Discrepancy",
                             ];
                           }}
