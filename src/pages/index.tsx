@@ -36,6 +36,10 @@ import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { ValidatorWithStats } from "@/types/base";
+import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
+import { CheckIcon } from "@/components/icons/Check";
+import { SearchIcon } from "@/components/icons/Search";
+import { SortIcon } from "@/components/icons/Sort";
 
 export default function Home() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -306,20 +310,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="flex items-center justify-between gap-4">
               <Input
-                leadingIcon={() => (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
+                leadingIcon={() => <SearchIcon className="w-5 h-5" />}
                 placeholder="Filter validators"
                 value={searchValue}
                 onChange={(value) => setSearchValue(value)}
@@ -339,20 +330,7 @@ export default function Home() {
                   }
                 >
                   <Checkbox.Indicator className="text-yellow-500">
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <CheckIcon className="w-[15px] h-[15px]" />
                   </Checkbox.Indicator>
                 </Checkbox.Root>
               </div>
@@ -402,34 +380,7 @@ export default function Home() {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                   }}
                 >
-                  {sortDirection === "desc" && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M2 3.75A.75.75 0 012.75 3h11.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h7.508a.75.75 0 010 1.5H2.75A.75.75 0 012 7.5zM14 7a.75.75 0 01.75.75v6.59l1.95-2.1a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 111.1-1.02l1.95 2.1V7.75A.75.75 0 0114 7zM2 11.25a.75.75 0 01.75-.75h4.562a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
-                  {sortDirection === "asc" && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M2 3.75A.75.75 0 012.75 3h11.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h6.365a.75.75 0 010 1.5H2.75A.75.75 0 012 7.5zM14 7a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02l-1.95-2.1v6.59a.75.75 0 01-1.5 0V9.66l-1.95 2.1a.75.75 0 11-1.1-1.02l3.25-3.5A.75.75 0 0114 7zM2 11.25a.75.75 0 01.75-.75H7A.75.75 0 017 12H2.75a.75.75 0 01-.75-.75z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
+                  <SortIcon className="w-4 h-4" direction={sortDirection} />
                 </button>
               </div>
             </div>
@@ -485,18 +436,7 @@ export default function Home() {
                               href={`/validators/${validator.pubkey}`}
                             >
                               <span>{validator.moniker}</span>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                className="w-4 h-4"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
+                              <ArrowRightTopIcon className="w-4 h-4" />
                             </Link>
                           </TableCell>
                           <TableCell align="right" className="w-[208px]">
