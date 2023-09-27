@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatUnits } from "ethers";
-import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/api";
+import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
 import {
   Table,

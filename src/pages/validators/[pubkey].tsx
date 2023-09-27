@@ -1,4 +1,4 @@
-import { useRawMEVQuery, useValidatorsQuery } from "@/api";
+import { useRawMEVQuery, useValidatorsQuery } from "@/hooks";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import { formatUnits } from "ethers";
