@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ethers } from "ethers";
+import { formatUnits } from "ethers";
 import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/api";
 import Card from "@/components/Card";
 import {
@@ -87,7 +87,7 @@ export default function Home() {
       return {
         ...acc,
         [data.validator]: data.cumulativeMev.map((v) =>
-          parseFloat(ethers.formatUnits(v.value.toFixed(0), 6))
+          parseFloat(formatUnits(v.value.toFixed(0), 6))
         ),
       };
     }, {} as Record<string, number[]>);
@@ -116,7 +116,7 @@ export default function Home() {
     }
 
     return filteredValidators.reduce((acc, validator) => {
-      return acc + parseFloat(ethers.formatUnits(validator.stake, 6));
+      return acc + parseFloat(formatUnits(validator.stake, 6));
     }, 0);
   }, [filteredValidators]);
 
@@ -136,15 +136,15 @@ export default function Home() {
         }
 
         if (sortBy === "averageMev") {
-          const aMev = parseFloat(ethers.formatUnits(a.averageMev, 6));
-          const bMev = parseFloat(ethers.formatUnits(b.averageMev, 6));
+          const aMev = parseFloat(formatUnits(a.averageMev, 6));
+          const bMev = parseFloat(formatUnits(b.averageMev, 6));
 
           return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
         }
 
         if (sortBy === "stake") {
-          const aStake = parseFloat(ethers.formatUnits(a.stake, 6));
-          const bStake = parseFloat(ethers.formatUnits(b.stake, 6));
+          const aStake = parseFloat(formatUnits(a.stake, 6));
+          const bStake = parseFloat(formatUnits(b.stake, 6));
 
           return sortDirection === "asc" ? aStake - bStake : bStake - aStake;
         }
@@ -419,13 +419,11 @@ export default function Home() {
                     ))}
                   {sortedValidators &&
                     sortedValidators.map((validator) => {
-                      const stake = parseFloat(
-                        ethers.formatUnits(validator.stake, 6)
-                      );
+                      const stake = parseFloat(formatUnits(validator.stake, 6));
                       const stakePercent = (stake / totalStake) * 100;
 
                       const averageMev = parseFloat(
-                        ethers.formatUnits(validator.averageMev, 6)
+                        formatUnits(validator.averageMev, 6)
                       );
 
                       return (

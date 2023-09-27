@@ -1,7 +1,7 @@
 import { useRawMEVQuery, useValidatorsQuery } from "@/api";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
-import { ethers } from "ethers";
+import { formatUnits } from "ethers";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -52,7 +52,7 @@ function ValidatorPage() {
     return datapoints.map((datapoint, index) => ({
       ...datapoint,
       key: index + 1,
-      value: parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6)),
+      value: parseFloat(formatUnits(parseInt(`${datapoint.value}`), 6)),
       probability: datapoint.probability * 100,
     }));
   }, [datapoints]);
@@ -63,7 +63,7 @@ function ValidatorPage() {
     }
 
     const values = [...datapoints].map((datapoint, _) => {
-      return parseFloat(ethers.formatUnits(parseInt(`${datapoint.value}`), 6));
+      return parseFloat(formatUnits(parseInt(`${datapoint.value}`), 6));
     });
 
     return values.map((_, index) => {
