@@ -84,23 +84,24 @@ export default function Home() {
 
     const points = [];
 
-    const validatorData = cumulativeMEV.reduce((acc, data) => {
-      return {
-        ...acc,
-        [data.validator]: data.cumulativeMev.map((v) =>
-          parseFloat(formatUnits(v.value.toFixed(0), 6))
-        ),
-      };
-    }, {} as Record<string, number[]>);
+    const validatorData: Record<string, number[]> = {};
+    for (const { validator, cumulativeMev } of cumulativeMEV) {
+      validatorData[validator] = cumulativeMev.map((v) =>
+        parseFloat(formatUnits(v.value.toFixed(0), 6))
+      );
+    }
 
-    for (let i = 0; i < MAIN_CHART_DATAPOINT_LIMIT / MAIN_CHART_DATAPOINT_EVERY; i++) {
-      const point = {
+    for (
+      let i = 0;
+      i < MAIN_CHART_DATAPOINT_LIMIT / MAIN_CHART_DATAPOINT_EVERY;
+      i++
+    ) {
+      const point: Record<string, number> = {
         key: (i + 1) * MAIN_CHART_DATAPOINT_EVERY,
       };
 
       for (const { validator } of cumulativeMEV) {
         if (i in validatorData[validator]) {
-          // @ts-ignore
           point[validator] = validatorData[validator][i];
         }
       }
