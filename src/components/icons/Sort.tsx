@@ -1,7 +1,7 @@
 import { ComponentProps, useMemo } from "react";
 
 export interface SortIconProps extends ComponentProps<"svg"> {
-  direction?: "asc" | "desc";
+  direction?: "asc" | "desc" | (string & {});
 }
 
 export const SortIcon = ({ direction = "asc", ...props }: SortIconProps) => {
