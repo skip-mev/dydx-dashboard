@@ -1,6 +1,5 @@
 import { useRawMEVQuery, useValidatorsQuery } from "@/hooks";
 import Card from "@/components/Card";
-import Layout from "@/components/Layout";
 import { formatUnits } from "ethers";
 import Head from "next/head";
 import Link from "next/link";
@@ -82,7 +81,7 @@ function ValidatorPage() {
       <Head>
         <title>{validator?.moniker} - dYdX MEV Dashboard | Skip</title>
       </Head>
-      <Layout>
+      <>
         <div className="py-12 space-y-4">
           <Link
             className="text-sm text-white/50 font-bold font-mono flex items-center gap-2"
@@ -276,7 +275,7 @@ function ValidatorPage() {
             </div>
           </div>
         )}
-      </Layout>
+      </>
     </Fragment>
   );
 }

@@ -19,7 +19,6 @@ import {
   SelectTrigger,
 } from "@/components/Select";
 import { Input } from "@/components/Input";
-import Layout from "@/components/Layout";
 import {
   Line,
   LineChart,
@@ -160,7 +159,7 @@ export default function Home() {
   }, [filteredValidators, searchValue, sortBy, sortDirection]);
 
   return (
-    <Layout>
+    <>
       <Head>
         <title>dYdX MEV Dashboard | Skip</title>
       </Head>
@@ -448,6 +447,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
