@@ -1,18 +1,14 @@
-import { FC } from "react";
+import { usdIntl } from "@/lib/intl";
+import { TooltipProps } from "recharts";
 
-export interface CustomTooltipProps {
-  active?: boolean;
-  payload?: any[];
-}
-
-const CustomTooltip: FC<any> = ({ active, payload, label }) => {
-  if (!(active && Array.isArray(payload))) return;
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+  if (!(active && payload)) return;
   return (
     <div className="bg-[#151617] p-4 font-mono text-xs border border-zinc-800 rounded-md shadow-md">
       {payload
-        .sort((a: any, b: any) => b.value - a.value)
+        .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
         .slice(0, 10)
-        .map((item: any, index: number) => {
+        .map((item, index) => {
           return (
             <div
               className={`flex items-center gap-4 ${
@@ -20,13 +16,9 @@ const CustomTooltip: FC<any> = ({ active, payload, label }) => {
               }`}
               key={index}
             >
-              <p className="flex-1 max-w-[100px] truncate">{item.dataKey}: </p>
-              <p>
-                {new Intl.NumberFormat("en-US", {
-                  currency: "USD",
-                  style: "currency",
-                }).format(item.value as number)}{" "}
-              </p>
+              <p className="flex-2 max-w-[100px] truncate">{item.dataKey}: </p>
+              <div className="flex-1" />
+              <p>{usdIntl.format(item.value ?? 0)} </p>
             </div>
           );
         })}

@@ -186,7 +186,7 @@ export default function Home() {
                           opacity: 0.8,
                         }}
                       />
-                      <ChartTooltip content={<CustomTooltip />} />
+                      <ChartTooltip content={CustomTooltip} />
                       {filteredValidators &&
                         filteredValidators.map((validator) => {
                           return (
