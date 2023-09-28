@@ -44,6 +44,7 @@ import {
 import { SearchInput } from "@/components/pages/home/SearchInput";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
+import { SortBySelect } from "@/components/pages/home/SortBySelect";
 
 export default function Home() {
   const {
@@ -282,19 +283,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Sort By:</p>
-                <Select
-                  defaultValue="stake"
-                  onValueChange={(value) => {
-                    useHomeStore.setState({ sortBy: value });
-                  }}
-                >
-                  <SelectTrigger />
-                  <SelectContent>
-                    <SelectItem value="validator">Validator</SelectItem>
-                    <SelectItem value="averageMev">Avg. Discrepancy</SelectItem>
-                    <SelectItem value="stake">Stake Weight</SelectItem>
-                  </SelectContent>
-                </Select>
+                <SortBySelect />
               </div>
               <div className="flex items-center gap-3">
                 <p className="text-sm text-white/50">Direction:</p>
