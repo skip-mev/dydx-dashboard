@@ -2,16 +2,7 @@
 import { Fragment, useEffect, useMemo } from "react";
 import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip as ChartTooltip,
-} from "recharts";
 import Head from "next/head";
-import CustomTooltip from "@/components/CustomTooltip";
 import {
   addSelectedValidator,
   removeSelectedValidator,
@@ -24,6 +15,7 @@ import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 import { SortBySelect } from "@/components/pages/home/SortBySelect";
 import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
 import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
+import { MainChart } from "@/components/pages/home/MainChart";
 
 export default function Home() {
   const { blocks, selectedValidators, highlightedValidator, hideInactive } =
@@ -86,71 +78,7 @@ export default function Home() {
                   <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[110px] font-mono text-xs">
                     Cumulative Orderbook Discrepancy ($)
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart
-                      data={chartData}
-                      margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                    >
-                      <XAxis
-                        dataKey="key"
-                        axisLine={false}
-                        tickLine={false}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                        minTickGap={50}
-                        interval="preserveStartEnd"
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        padding={{ top: 20, bottom: 20 }}
-                        style={{
-                          fill: "#fff",
-                          fontFamily: "monospace",
-                          fontSize: 13,
-                          opacity: 0.8,
-                        }}
-                      />
-                      <ChartTooltip content={CustomTooltip} />
-                      {validators &&
-                        validators.map((validator) => {
-                          return (
-                            <Line
-                              key={validator.pubkey}
-                              dot={false}
-                              dataKey={validator.moniker}
-                              stroke={
-                                selectedValidators.includes(validator)
-                                  ? "#b51717"
-                                  : validator.moniker ===
-                                    highlightedValidator?.moniker
-                                  ? "#34F3FF"
-                                  : "#8884d8"
-                              }
-                              isAnimationActive={false}
-                              opacity={
-                                selectedValidators.includes(validator) ||
-                                validator.moniker ===
-                                  highlightedValidator?.moniker
-                                  ? 1
-                                  : 0.3
-                              }
-                              onClick={() => {
-                                if (selectedValidators.includes(validator)) {
-                                  removeSelectedValidator(validator);
-                                } else {
-                                  addSelectedValidator(validator);
-                                }
-                              }}
-                            ></Line>
-                          );
-                        })}
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <MainChart />
                   <p className="font-mono text-center text-sm pt-4">
                     Past Proposed Blocks
                   </p>
