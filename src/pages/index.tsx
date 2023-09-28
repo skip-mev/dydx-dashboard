@@ -41,6 +41,7 @@ import {
   resetSelectedValidators,
   useHomeStore,
 } from "@/store/home";
+import { SearchInput } from "@/components/pages/home/SearchInput";
 
 export default function Home() {
   const {
@@ -264,14 +265,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center justify-between gap-4">
-              <Input
-                leadingIcon={() => <SearchIcon className="w-5 h-5" />}
-                placeholder="Filter validators"
-                value={searchValue}
-                onChange={(value) =>
-                  useHomeStore.setState({ searchValue: value })
-                }
-              />
+              <SearchInput />
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
               <div className="flex items-center gap-1">
