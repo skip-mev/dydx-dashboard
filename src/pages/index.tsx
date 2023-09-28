@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { formatUnits } from "ethers";
-import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/hooks";
+import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
 import {
   Table,
@@ -73,7 +73,7 @@ export default function Home() {
     }
   }, [selectedValidators, filteredValidators]);
 
-  const { data: cumulativeMEV } = useCumulativeMEVQuery();
+  const { data: cumulativeMEV } = useMainChartData();
 
   const chartData = useMemo(() => {
     if (!cumulativeMEV) {

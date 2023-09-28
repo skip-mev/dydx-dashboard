@@ -12,11 +12,8 @@ export type Datapoint = {
 
 export type MainChartData = {
   validator: string;
-  cumulativeMev: {
-    key: number;
-    value: number;
-  }[];
-};
+  cumulativeMev: { key: number; value: number }[];
+}[];
 
 export type Validator = {
   moniker: string;

@@ -7,7 +7,7 @@ import { getValidators } from "./validator";
 /**
  * Fetches the cumulative MEV data for all validators.
  */
-export async function getMainChartData(): Promise<MainChartData[]> {
+export async function getMainChartData(): Promise<MainChartData> {
   const validators = await getValidators();
 
   const allData = await Promise.all(
@@ -21,15 +21,13 @@ export async function getMainChartData(): Promise<MainChartData[]> {
     })
   );
 
-  const data = validators.map(
-    (validator, index): MainChartData => ({
-      validator: validator.moniker,
-      cumulativeMev: allData[index].map(({ value }, index) => ({
-        key: index * constants.MAIN_CHART_DATAPOINT_EVERY,
-        value,
-      })),
-    })
-  );
+  const data = validators.map((validator, index): MainChartData[number] => ({
+    validator: validator.moniker,
+    cumulativeMev: allData[index].map(({ value }, index) => ({
+      key: index * constants.MAIN_CHART_DATAPOINT_EVERY,
+      value,
+    })),
+  }));
 
   return data;
 }
