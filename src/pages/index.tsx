@@ -2,7 +2,11 @@
 import { Fragment, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { formatUnits } from "ethers";
-import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
+import {
+  useMainChartData,
+  useSortedValidatorsQuery,
+  useValidatorsWithStatsQuery,
+} from "@/hooks";
 import Card from "@/components/Card";
 import {
   Table,
@@ -35,6 +39,7 @@ import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 import { SortBySelect } from "@/components/pages/home/SortBySelect";
 import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
+import { matchSorter } from "match-sorter";
 
 export default function Home() {
   const {
@@ -47,23 +52,21 @@ export default function Home() {
     hideInactive,
   } = useHomeStore();
 
-  const { data: validators, fetchStatus } = useValidatorsWithStatsQuery({
+  const { data: validators = [], fetchStatus } = useValidatorsWithStatsQuery({
     blocks,
+    select: (arr = []) => {
+      if (hideInactive) {
+        arr = arr.filter((validator) => validator.stake !== "0");
+      }
+      return arr;
+    },
   });
 
-  const activeValidators = useMemo(() => {
-    return validators?.filter((validator) => validator.stake !== "0");
-  }, [validators]);
-
-  const filteredValidators = useMemo(() => {
-    return hideInactive ? activeValidators : validators;
-  }, [activeValidators, hideInactive, validators]);
-
   useEffect(() => {
-    if (filteredValidators && selectedValidators.length === 0) {
-      resetSelectedValidators([filteredValidators[0]]);
+    if (validators?.[0] && selectedValidators.length === 0) {
+      resetSelectedValidators([validators[0]]);
     }
-  }, [selectedValidators, filteredValidators]);
+  }, [selectedValidators, validators]);
 
   const { data: mainChartData } = useMainChartData();
 
@@ -72,52 +75,26 @@ export default function Home() {
   }, [mainChartData?.points]);
 
   const totalStake = useMemo(() => {
-    if (!filteredValidators) {
+    if (!validators) {
       return 0;
     }
 
-    return filteredValidators.reduce((acc, validator) => {
+    return validators.reduce((acc, validator) => {
       return acc + parseFloat(formatUnits(validator.stake, 6));
     }, 0);
-  }, [filteredValidators]);
+  }, [validators]);
 
-  const sortedValidators = useMemo(() => {
-    if (!filteredValidators) {
-      return undefined;
-    }
-
-    return filteredValidators
-      .sort((a, b) => {
-        if (sortBy === "validator" && sortDirection === "asc") {
-          return a.moniker.localeCompare(b.moniker);
-        }
-
-        if (sortBy === "validator" && sortDirection === "desc") {
-          return b.moniker.localeCompare(a.moniker);
-        }
-
-        if (sortBy === "averageMev") {
-          const aMev = parseFloat(formatUnits(a.averageMev, 6));
-          const bMev = parseFloat(formatUnits(b.averageMev, 6));
-
-          return sortDirection === "asc" ? aMev - bMev : bMev - aMev;
-        }
-
-        if (sortBy === "stake") {
-          const aStake = parseFloat(formatUnits(a.stake, 6));
-          const bStake = parseFloat(formatUnits(b.stake, 6));
-
-          return sortDirection === "asc" ? aStake - bStake : bStake - aStake;
-        }
-
-        return -1;
-      })
-      .filter((validator) => {
-        return validator.moniker
-          .toLowerCase()
-          .includes(searchValue.toLowerCase());
-      });
-  }, [filteredValidators, searchValue, sortBy, sortDirection]);
+  const { data: sortedValidators } = useSortedValidatorsQuery({
+    validators,
+    sortBy,
+    sortDirection,
+    select: (arr = []) => {
+      if (searchValue) {
+        return matchSorter(arr, searchValue, { keys: ["moniker", "pubkey"] });
+      }
+      return arr;
+    },
+  });
 
   return (
     <>
@@ -147,8 +124,9 @@ export default function Home() {
             }`}
           >
             <div className="relative">
-              {chartData.length === 0 && <div className="h-[300px] w-full" />}
-              {chartData.length > 0 && (
+              {chartData.length < 1 ? (
+                <div className="h-[300px] w-full" />
+              ) : (
                 <Fragment>
                   <div className="absolute -rotate-90 translate-y-[130px] -translate-x-[110px] font-mono text-xs">
                     Cumulative Orderbook Discrepancy ($)
@@ -183,8 +161,8 @@ export default function Home() {
                         }}
                       />
                       <ChartTooltip content={CustomTooltip} />
-                      {filteredValidators &&
-                        filteredValidators.map((validator) => {
+                      {validators &&
+                        validators.map((validator) => {
                           return (
                             <Line
                               key={validator.pubkey}
@@ -222,7 +200,7 @@ export default function Home() {
                     Past Proposed Blocks
                   </p>
                   <div className="flex justify-center gap-2 flex-wrap pt-8">
-                    {filteredValidators?.map((validator) => (
+                    {validators?.map((validator) => (
                       <button
                         className={`${
                           selectedValidators.includes(validator)
