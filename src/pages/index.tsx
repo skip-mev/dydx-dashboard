@@ -3,12 +3,7 @@ import { Fragment, useEffect, useMemo } from "react";
 import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
 import Head from "next/head";
-import {
-  addSelectedValidator,
-  removeSelectedValidator,
-  resetSelectedValidators,
-  useHomeStore,
-} from "@/store/home";
+import { resetSelectedValidators, useHomeStore } from "@/store/home";
 import { SearchInput } from "@/components/pages/home/SearchInput";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
@@ -16,10 +11,10 @@ import { SortBySelect } from "@/components/pages/home/SortBySelect";
 import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
 import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
+import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
 
 export default function Home() {
-  const { blocks, selectedValidators, highlightedValidator, hideInactive } =
-    useHomeStore();
+  const { blocks, selectedValidators, hideInactive } = useHomeStore();
 
   const { data: validators = [], fetchStatus } = useValidatorsWithStatsQuery({
     blocks,
@@ -82,32 +77,7 @@ export default function Home() {
                   <p className="font-mono text-center text-sm pt-4">
                     Past Proposed Blocks
                   </p>
-                  <div className="flex justify-center gap-2 flex-wrap pt-8">
-                    {validators?.map((validator) => (
-                      <button
-                        className={`${
-                          selectedValidators.includes(validator)
-                            ? "bg-[#b51717]"
-                            : "bg-white/5 hover:bg-[#b51717]"
-                        } text-xs py-1 px-2 rounded-md transition-colors`}
-                        key={validator.pubkey}
-                        onMouseOver={() =>
-                          useHomeStore.setState({
-                            highlightedValidator: validator,
-                          })
-                        }
-                        onClick={() => {
-                          if (selectedValidators.includes(validator)) {
-                            removeSelectedValidator(validator);
-                          } else {
-                            addSelectedValidator(validator);
-                          }
-                        }}
-                      >
-                        {validator.moniker}
-                      </button>
-                    ))}
-                  </div>
+                  <MainChartToggles className="flex justify-center gap-2 flex-wrap pt-8" />
                 </Fragment>
               )}
             </div>
