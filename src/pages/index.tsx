@@ -1,21 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useMemo } from "react";
-import Link from "next/link";
-import { formatUnits } from "ethers";
-import {
-  useMainChartData,
-  useSortedValidatorsQuery,
-  useValidatorsWithStatsQuery,
-} from "@/hooks";
+import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/Table";
 import {
   Line,
   LineChart,
@@ -26,8 +12,6 @@ import {
 } from "recharts";
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
-import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
-import { usdIntl } from "@/lib/intl";
 import {
   addSelectedValidator,
   removeSelectedValidator,
@@ -39,18 +23,11 @@ import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 import { SortBySelect } from "@/components/pages/home/SortBySelect";
 import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
-import { matchSorter } from "match-sorter";
+import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 
 export default function Home() {
-  const {
-    searchValue,
-    blocks,
-    sortBy,
-    sortDirection,
-    selectedValidators,
-    highlightedValidator,
-    hideInactive,
-  } = useHomeStore();
+  const { blocks, selectedValidators, highlightedValidator, hideInactive } =
+    useHomeStore();
 
   const { data: validators = [], fetchStatus } = useValidatorsWithStatsQuery({
     blocks,
@@ -73,28 +50,6 @@ export default function Home() {
   const chartData = useMemo(() => {
     return mainChartData?.points ?? [];
   }, [mainChartData?.points]);
-
-  const totalStake = useMemo(() => {
-    if (!validators) {
-      return 0;
-    }
-
-    return validators.reduce((acc, validator) => {
-      return acc + parseFloat(formatUnits(validator.stake, 6));
-    }, 0);
-  }, [validators]);
-
-  const { data: sortedValidators } = useSortedValidatorsQuery({
-    validators,
-    sortBy,
-    sortDirection,
-    select: (arr = []) => {
-      if (searchValue) {
-        return matchSorter(arr, searchValue, { keys: ["moniker", "pubkey"] });
-      }
-      return arr;
-    },
-  });
 
   return (
     <>
@@ -263,69 +218,7 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <div>
-            <Card className="relative">
-              <Table>
-                <TableHeader>
-                  <TableHead>Validator</TableHead>
-                  <TableHead align="right">
-                    <span>
-                      Avg. Orderbook <br /> Discrepancy
-                    </span>
-                  </TableHead>
-                  <TableHead align="right">Stake Weight</TableHead>
-                </TableHeader>
-                <TableBody>
-                  {!sortedValidators &&
-                    Array.from({ length: 20 }).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="w-[400px]">
-                          <div className="w-full h-5 bg-white/5"></div>
-                        </TableCell>
-                        <TableCell className="w-[208px]">
-                          <div className="w-full h-5 bg-white/5"></div>
-                        </TableCell>
-                        <TableCell className="w-[208px]">
-                          <div className="w-full h-5 bg-white/5"></div>
-                        </TableCell>
-                        <TableCell className="w-[208px] flex justify-end">
-                          <div className="w-10/12 h-5 bg-white/5"></div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  {sortedValidators &&
-                    sortedValidators.map((validator) => {
-                      const stake = parseFloat(formatUnits(validator.stake, 6));
-                      const stakePercent = (stake / totalStake) * 100;
-
-                      const averageMev = parseFloat(
-                        formatUnits(validator.averageMev, 6)
-                      );
-
-                      return (
-                        <TableRow key={validator.pubkey}>
-                          <TableCell className="w-[400px] truncate">
-                            <Link
-                              className="text-[#6398FF] inline-flex items-center gap-1 hover:underline"
-                              href={`/validators/${validator.pubkey}`}
-                            >
-                              <span>{validator.moniker}</span>
-                              <ArrowRightTopIcon className="w-4 h-4" />
-                            </Link>
-                          </TableCell>
-                          <TableCell align="right" className="w-[208px]">
-                            {usdIntl.format(averageMev)}
-                          </TableCell>
-                          <TableCell align="right" className="w-[208px]">
-                            {stakePercent.toFixed(2)}%
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </Card>
-          </div>
+          <ValidatorsTable />
         </div>
       </div>
     </>
