@@ -1,11 +1,9 @@
-import { FC, PropsWithChildren } from "react";
+import { ComponentProps } from "react";
 
-interface CardProps extends PropsWithChildren {
-  className?: string;
-}
+export type CardProps = ComponentProps<"div">;
 
-const Card: FC<CardProps> = ({ children, className }) => {
-  return <div className={`bg-light-3 rounded-lg ${className}`}>{children}</div>;
+const Card = ({ className, ...props }: CardProps) => {
+  return <div className={`bg-light-3 rounded-lg ${className}`} {...props} />;
 };
 
 export default Card;
