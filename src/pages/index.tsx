@@ -13,13 +13,6 @@ import {
   TableRow,
 } from "@/components/Table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/Select";
-import { Input } from "@/components/Input";
-import {
   Line,
   LineChart,
   ResponsiveContainer,
@@ -29,11 +22,7 @@ import {
 } from "recharts";
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
-import * as Checkbox from "@radix-ui/react-checkbox";
 import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
-import { CheckIcon } from "@/components/icons/Check";
-import { SearchIcon } from "@/components/icons/Search";
-import { SortIcon } from "@/components/icons/Sort";
 import { usdIntl } from "@/lib/intl";
 import {
   addSelectedValidator,
