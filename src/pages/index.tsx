@@ -13,6 +13,7 @@ import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
 import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
 import { useQuery } from "@tanstack/react-query";
+import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
 
 export default function Home() {
   const { blocks, selectedValidators, hideInactive } = useHomeStore();
@@ -37,20 +38,12 @@ export default function Home() {
     queryKey: ["USE_MAIN_CHART_DATA"],
   });
 
-  const { isLoading: isValidatorsLoading } = useQuery({
-    queryKey: ["USE_VALIDATORS_WITH_STATS"],
-  });
-
   return (
     <>
       <Head>
         <title>dYdX MEV Dashboard | Skip</title>
       </Head>
-      {isValidatorsLoading && (
-        <div className="w-full h-1 bg-indigo-500 fixed top-0 left-0 right-0 overflow-hidden">
-          <div className="bg-indigo-600 w-full h-full animate-fade-right animate-infinite"></div>
-        </div>
-      )}
+      <ValidatorLoadingIndicator />
       <div className="py-12 space-y-12">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="space-y-5">
