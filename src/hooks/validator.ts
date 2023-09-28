@@ -16,7 +16,16 @@ export function useValidatorsQuery() {
   });
 }
 
-export function useValidatorsWithStatsQuery(blocks: number) {
+export type UseValidatorsWithStatsArgs<T = ValidatorWithStats[]> = {
+  blocks: number;
+  select?: (arr?: ValidatorWithStats[]) => T;
+};
+
+export function useValidatorsWithStatsQuery<T = ValidatorWithStats[]>(
+  args: UseValidatorsWithStatsArgs<T>
+) {
+  const { blocks, select = (t) => t as T } = args;
+
   const { data: toHeight } = useLatestHeightQuery();
   const { data: validators } = useValidatorsQuery();
 
@@ -56,27 +65,6 @@ export function useValidatorsWithStatsQuery(blocks: number) {
     },
     enabled: !!toHeight && !!validators,
     keepPreviousData: true,
+    select,
   });
 }
-
-// export function useActiveValidatorsWithStatsQuery(blocks: number) {
-//   const { data: toHeight } = useLatestHeightQuery();
-//   const { data: validators } = useValidatorsQuery();
-
-//   const { data: validatorsWithStats } = useValidatorsWithStatsQuery(blocks);
-
-//   const queryKey = useMemo(() => {
-//     const args = { blocks, toHeight, validators };
-//     return ["USE_ACTIVE_VALIDATORS_WITH_STATS", args] as const;
-//   }, [blocks, toHeight, validators]);
-
-//   return useQuery({
-//     queryKey,
-//     queryFn: async ({ queryKey: [, args] }) => {
-//       if (!validatorsWithStats) return;
-//       return validatorsWithStats.filter((validator) => validator.stake !== "0");
-//     },
-//     enabled: !!toHeight && !!validators && !!validatorsWithStats,
-//     keepPreviousData: true,
-//   });
-// }

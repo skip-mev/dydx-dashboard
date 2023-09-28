@@ -47,7 +47,9 @@ export default function Home() {
     hideInactive,
   } = useHomeStore();
 
-  const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
+  const { data: validators, fetchStatus } = useValidatorsWithStatsQuery({
+    blocks,
+  });
 
   const activeValidators = useMemo(() => {
     return validators?.filter((validator) => validator.stake !== "0");
