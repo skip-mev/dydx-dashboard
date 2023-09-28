@@ -42,6 +42,7 @@ import {
   useHomeStore,
 } from "@/store/home";
 import { SearchInput } from "@/components/pages/home/SearchInput";
+import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 
 export default function Home() {
   const {
@@ -272,19 +273,7 @@ export default function Home() {
                 <label className="text-sm text-white/50" htmlFor="hideInactive">
                   Exclude inactive validators:
                 </label>
-                <Checkbox.Root
-                  checked={hideInactive}
-                  className="flex h-5 w-5 items-center justify-center rounded-sm bg-white/10 hover:bg-white/20"
-                  id="hideInactive"
-                  onCheckedChange={(v) =>
-                    typeof v === "boolean" &&
-                    useHomeStore.setState({ hideInactive: v })
-                  }
-                >
-                  <Checkbox.Indicator className="text-yellow-500">
-                    <CheckIcon className="w-[15px] h-[15px]" />
-                  </Checkbox.Indicator>
-                </Checkbox.Root>
+                <InactiveToggle />
               </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Timeframe:</p>
