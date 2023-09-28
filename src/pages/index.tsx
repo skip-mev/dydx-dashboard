@@ -10,11 +10,11 @@ import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
 import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
 import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
-import { useQuery } from "@tanstack/react-query";
+import { useIsFetching } from "@tanstack/react-query";
 import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
 
 export default function Home() {
-  const { isLoading: isChartLoading } = useQuery({
+  const isChartLoading = useIsFetching({
     queryKey: ["USE_MAIN_CHART_DATA"],
   });
 

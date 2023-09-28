@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useIsFetching } from "@tanstack/react-query";
 
 export const ValidatorLoadingIndicator = () => {
-  const { isLoading: isValidatorsLoading } = useQuery({
+  const isValidatorsLoading = useIsFetching({
     queryKey: ["USE_VALIDATORS_WITH_STATS"],
   });
 
