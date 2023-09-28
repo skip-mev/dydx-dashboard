@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { formatUnits } from "ethers";
 import { useCumulativeMEVQuery, useValidatorsWithStatsQuery } from "@/hooks";
@@ -35,27 +35,28 @@ import {
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { ValidatorWithStats } from "@/types/base";
 import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
 import { CheckIcon } from "@/components/icons/Check";
 import { SearchIcon } from "@/components/icons/Search";
 import { SortIcon } from "@/components/icons/Sort";
 import { usdIntl } from "@/lib/intl";
+import {
+  addSelectedValidator,
+  removeSelectedValidator,
+  resetSelectedValidators,
+  useHomeStore,
+} from "@/store/home";
 
 export default function Home() {
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [blocks, setBlocks] = useState(43200);
-
-  const [sortBy, setSortBy] = useState("stake");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-
-  const [selectedValidators, setSelectedValidators] = useState<
-    ValidatorWithStats[]
-  >([]);
-
-  const [highlightedValidator, setHighlightedValidator] = useState<
-    ValidatorWithStats | undefined
-  >(undefined);
+  const {
+    searchValue,
+    blocks,
+    sortBy,
+    sortDirection,
+    selectedValidators,
+    highlightedValidator,
+    hideInactive,
+  } = useHomeStore();
 
   const { data: validators, fetchStatus } = useValidatorsWithStatsQuery(blocks);
 
@@ -63,15 +64,13 @@ export default function Home() {
     return validators?.filter((validator) => validator.stake !== "0");
   }, [validators]);
 
-  const [hideInactive, setHideInactive] = useState(true);
-
   const filteredValidators = useMemo(() => {
     return hideInactive ? activeValidators : validators;
   }, [activeValidators, hideInactive, validators]);
 
   useEffect(() => {
     if (filteredValidators && selectedValidators.length === 0) {
-      setSelectedValidators([filteredValidators[0]]);
+      resetSelectedValidators([filteredValidators[0]]);
     }
   }, [selectedValidators, filteredValidators]);
 
@@ -249,16 +248,9 @@ export default function Home() {
                               }
                               onClick={() => {
                                 if (selectedValidators.includes(validator)) {
-                                  setSelectedValidators(
-                                    selectedValidators.filter(
-                                      (v) => v.pubkey !== validator.pubkey
-                                    )
-                                  );
+                                  removeSelectedValidator(validator);
                                 } else {
-                                  setSelectedValidators([
-                                    ...selectedValidators,
-                                    validator,
-                                  ]);
+                                  addSelectedValidator(validator);
                                 }
                               }}
                             ></Line>
@@ -278,19 +270,16 @@ export default function Home() {
                             : "bg-white/5 hover:bg-[#b51717]"
                         } text-xs py-1 px-2 rounded-md transition-colors`}
                         key={validator.pubkey}
-                        onMouseOver={() => setHighlightedValidator(validator)}
+                        onMouseOver={() =>
+                          useHomeStore.setState({
+                            highlightedValidator: validator,
+                          })
+                        }
                         onClick={() => {
                           if (selectedValidators.includes(validator)) {
-                            setSelectedValidators(
-                              selectedValidators.filter(
-                                (v) => v.pubkey !== validator.pubkey
-                              )
-                            );
+                            removeSelectedValidator(validator);
                           } else {
-                            setSelectedValidators([
-                              ...selectedValidators,
-                              validator,
-                            ]);
+                            addSelectedValidator(validator);
                           }
                         }}
                       >
@@ -315,7 +304,9 @@ export default function Home() {
                 leadingIcon={() => <SearchIcon className="w-5 h-5" />}
                 placeholder="Filter validators"
                 value={searchValue}
-                onChange={(value) => setSearchValue(value)}
+                onChange={(value) =>
+                  useHomeStore.setState({ searchValue: value })
+                }
               />
             </div>
             <div className="flex-1 flex items-center justify-end gap-4">
@@ -328,7 +319,8 @@ export default function Home() {
                   className="flex h-5 w-5 items-center justify-center rounded-sm bg-white/10 hover:bg-white/20"
                   id="hideInactive"
                   onCheckedChange={(v) =>
-                    typeof v === "boolean" && setHideInactive(v)
+                    typeof v === "boolean" &&
+                    useHomeStore.setState({ hideInactive: v })
                   }
                 >
                   <Checkbox.Indicator className="text-yellow-500">
@@ -347,7 +339,7 @@ export default function Home() {
                       "30D": 2116800,
                     };
 
-                    setBlocks(strToBlocks[value]);
+                    useHomeStore.setState({ blocks: strToBlocks[value] });
                   }}
                 >
                   <SelectTrigger />
@@ -363,7 +355,7 @@ export default function Home() {
                 <Select
                   defaultValue="stake"
                   onValueChange={(value) => {
-                    setSortBy(value);
+                    useHomeStore.setState({ sortBy: value });
                   }}
                 >
                   <SelectTrigger />
@@ -379,7 +371,9 @@ export default function Home() {
                 <button
                   className="text-white/70 hover:text-white transition-colors"
                   onClick={() => {
-                    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+                    useHomeStore.setState({
+                      sortDirection: sortDirection === "asc" ? "desc" : "asc",
+                    });
                   }}
                 >
                   <SortIcon className="w-4 h-4" direction={sortDirection} />
