@@ -27,10 +27,6 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from "recharts";
-import {
-  MAIN_CHART_DATAPOINT_LIMIT,
-  MAIN_CHART_DATAPOINT_EVERY,
-} from "@/constants";
 import Head from "next/head";
 import CustomTooltip from "@/components/CustomTooltip";
 import * as Checkbox from "@radix-ui/react-checkbox";
@@ -73,42 +69,11 @@ export default function Home() {
     }
   }, [selectedValidators, filteredValidators]);
 
-  const { data: cumulativeMEV } = useMainChartData();
+  const { data: mainChartData } = useMainChartData();
 
   const chartData = useMemo(() => {
-    if (!cumulativeMEV) {
-      return [];
-    }
-
-    const points = [];
-
-    const validatorData: Record<string, number[]> = {};
-    for (const { validator, cumulativeMev } of cumulativeMEV) {
-      validatorData[validator] = cumulativeMev.map((v) =>
-        parseFloat(formatUnits(v.value.toFixed(0), 6))
-      );
-    }
-
-    for (
-      let i = 0;
-      i < MAIN_CHART_DATAPOINT_LIMIT / MAIN_CHART_DATAPOINT_EVERY;
-      i++
-    ) {
-      const point: Record<string, number> = {
-        key: (i + 1) * MAIN_CHART_DATAPOINT_EVERY,
-      };
-
-      for (const { validator } of cumulativeMEV) {
-        if (i in validatorData[validator]) {
-          point[validator] = validatorData[validator][i];
-        }
-      }
-
-      points.push(point);
-    }
-
-    return points;
-  }, [cumulativeMEV]);
+    return mainChartData?.points ?? [];
+  }, [mainChartData?.points]);
 
   const totalStake = useMemo(() => {
     if (!filteredValidators) {
