@@ -45,6 +45,7 @@ import { SearchInput } from "@/components/pages/home/SearchInput";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 import { SortBySelect } from "@/components/pages/home/SortBySelect";
+import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
 
 export default function Home() {
   const {
@@ -287,16 +288,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-3">
                 <p className="text-sm text-white/50">Direction:</p>
-                <button
-                  className="text-white/70 hover:text-white transition-colors"
-                  onClick={() => {
-                    useHomeStore.setState({
-                      sortDirection: sortDirection === "asc" ? "desc" : "asc",
-                    });
-                  }}
-                >
-                  <SortIcon className="w-4 h-4" direction={sortDirection} />
-                </button>
+                <SortOrderButton />
               </div>
             </div>
           </div>
