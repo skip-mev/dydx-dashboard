@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect, useMemo } from "react";
-import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
+import { Fragment, useEffect } from "react";
+import { useValidatorsWithStatsQuery } from "@/hooks";
 import Card from "@/components/Card";
 import Head from "next/head";
 import { resetSelectedValidators, useHomeStore } from "@/store/home";
@@ -12,11 +12,12 @@ import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
 import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
 import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { blocks, selectedValidators, hideInactive } = useHomeStore();
 
-  const { data: validators = [], fetchStatus } = useValidatorsWithStatsQuery({
+  const { data: validators = [] } = useValidatorsWithStatsQuery({
     blocks,
     select: (arr = []) => {
       if (hideInactive) {
@@ -32,18 +33,20 @@ export default function Home() {
     }
   }, [selectedValidators, validators]);
 
-  const { data: mainChartData } = useMainChartData();
+  const { isLoading: isChartLoading } = useQuery({
+    queryKey: ["USE_MAIN_CHART_DATA"],
+  });
 
-  const chartData = useMemo(() => {
-    return mainChartData?.points ?? [];
-  }, [mainChartData?.points]);
+  const { isLoading: isValidatorsLoading } = useQuery({
+    queryKey: ["USE_VALIDATORS_WITH_STATS"],
+  });
 
   return (
     <>
       <Head>
         <title>dYdX MEV Dashboard | Skip</title>
       </Head>
-      {fetchStatus === "fetching" && (
+      {isValidatorsLoading && (
         <div className="w-full h-1 bg-indigo-500 fixed top-0 left-0 right-0 overflow-hidden">
           <div className="bg-indigo-600 w-full h-full animate-fade-right animate-infinite"></div>
         </div>
@@ -61,12 +64,10 @@ export default function Home() {
         </div>
         <div>
           <Card
-            className={`p-6 pr-4 ${
-              chartData.length === 0 ? "animate-pulse" : null
-            }`}
+            className={`p-6 pr-4 ${isChartLoading ? "animate-pulse" : null}`}
           >
             <div className="relative">
-              {chartData.length < 1 ? (
+              {isChartLoading ? (
                 <div className="h-[300px] w-full" />
               ) : (
                 <Fragment>
