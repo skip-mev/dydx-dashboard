@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect } from "react";
-import { useValidatorsWithStatsQuery } from "@/hooks";
+import { Fragment } from "react";
 import Card from "@/components/Card";
 import Head from "next/head";
-import { resetSelectedValidators, useHomeStore } from "@/store/home";
 import { SearchInput } from "@/components/pages/home/SearchInput";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
 import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
@@ -16,24 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
 
 export default function Home() {
-  const { blocks, selectedValidators, hideInactive } = useHomeStore();
-
-  const { data: validators = [] } = useValidatorsWithStatsQuery({
-    blocks,
-    select: (arr = []) => {
-      if (hideInactive) {
-        arr = arr.filter((validator) => validator.stake !== "0");
-      }
-      return arr;
-    },
-  });
-
-  useEffect(() => {
-    if (validators?.[0] && selectedValidators.length === 0) {
-      resetSelectedValidators([validators[0]]);
-    }
-  }, [selectedValidators, validators]);
-
   const { isLoading: isChartLoading } = useQuery({
     queryKey: ["USE_MAIN_CHART_DATA"],
   });

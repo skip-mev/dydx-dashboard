@@ -2,9 +2,10 @@ import { useValidatorsWithStatsQuery } from "@/hooks";
 import {
   addSelectedValidator,
   removeSelectedValidator,
+  resetSelectedValidators,
   useHomeStore,
 } from "@/store/home";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect } from "react";
 
 export const MainChartToggles = (props: ComponentProps<"div">) => {
   const blocks = useHomeStore((state) => state.blocks);
@@ -20,6 +21,12 @@ export const MainChartToggles = (props: ComponentProps<"div">) => {
       return arr;
     },
   });
+
+  useEffect(() => {
+    if (validators?.[0] && selected.length === 0) {
+      resetSelectedValidators([validators[0]]);
+    }
+  }, [selected, validators]);
 
   return (
     <div {...props}>
