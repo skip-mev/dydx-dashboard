@@ -43,6 +43,7 @@ import {
 } from "@/store/home";
 import { SearchInput } from "@/components/pages/home/SearchInput";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
+import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 
 export default function Home() {
   const {
@@ -277,25 +278,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Timeframe:</p>
-                <Select
-                  defaultValue="today"
-                  onValueChange={(value) => {
-                    const strToBlocks: Record<string, number> = {
-                      today: 43200,
-                      "7D": 302400,
-                      "30D": 2116800,
-                    };
-
-                    useHomeStore.setState({ blocks: strToBlocks[value] });
-                  }}
-                >
-                  <SelectTrigger />
-                  <SelectContent>
-                    <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="7D">7 Days</SelectItem>
-                    <SelectItem value="30D">30 Days</SelectItem>
-                  </SelectContent>
-                </Select>
+                <TimeframeSelect />
               </div>
               <div className="flex items-center gap-1">
                 <p className="text-sm text-white/50">Sort By:</p>
