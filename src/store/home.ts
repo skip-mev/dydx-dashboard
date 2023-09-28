@@ -1,4 +1,6 @@
-import { ValidatorWithStats } from "@/types/base";
+import { Validator, ValidatorWithStats } from "@/types/base";
+import { ValidatorComparer } from "@/types/utils";
+import { useCallback } from "react";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
@@ -58,4 +60,40 @@ export function resetSelectedValidators(value?: ValidatorWithStats[]) {
     selectedValidators: value ?? [],
     selectedValidatorsSet: new Set(value?.map((v) => v.moniker) ?? []),
   });
+}
+
+export function useHomeStoreValidatorComparer() {
+  const sortBy = useHomeStore((state) => state.sortBy);
+  const sortDirection = useHomeStore((state) => state.sortDirection);
+
+  return useCallback(
+    <T extends Validator | ValidatorWithStats>(a: T, b: T) => {
+      if (sortBy === "validator" && sortDirection === "asc") {
+        return ValidatorComparer.VALIDATOR_ASC(a, b);
+      }
+
+      if (sortBy === "validator" && sortDirection === "desc") {
+        return ValidatorComparer.VALIDATOR_DESC(a, b);
+      }
+
+      if ("averageMev" in a && "averageMev" in b && sortBy === "averageMev") {
+        if (sortDirection === "asc") {
+          return ValidatorComparer.AVERAGE_MEV_ASC(a, b);
+        } else {
+          return ValidatorComparer.AVERAGE_MEV_DESC(a, b);
+        }
+      }
+
+      if (sortBy === "stake") {
+        if (sortDirection === "asc") {
+          return ValidatorComparer.STAKE_ASC(a, b);
+        } else {
+          return ValidatorComparer.STAKE_DESC(a, b);
+        }
+      }
+
+      return -1;
+    },
+    [sortBy, sortDirection]
+  );
 }
