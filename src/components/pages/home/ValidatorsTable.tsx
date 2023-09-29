@@ -47,7 +47,7 @@ export const ValidatorsTable = () => {
   }, [validators]);
 
   return (
-    <div className="max-w-full overflow-auto md:[overflow:unset]">
+    <div className="max-w-full overflow-auto md:[overflow:unset] min-h-[75vh]">
       <Table className="bg-light-3 rounded-none md:rounded-lg w-full">
         <TableHeader
           className={clsx(
