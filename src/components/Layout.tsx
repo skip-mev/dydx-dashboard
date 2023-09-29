@@ -1,5 +1,5 @@
 import { ComponentProps } from "react";
-import Navbar from "./NavBar";
+import Navbar from "./Navbar";
 
 function Layout({ children, ...props }: ComponentProps<"main">) {
   return (
