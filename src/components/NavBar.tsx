@@ -1,7 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import { FC } from "react";
-
-const NavBar: FC = () => {
+const Navbar = () => {
   return (
     <nav className="p-4">
       <div className="max-w-screen-lg flex justify-center md:justify-start mx-auto">
@@ -11,4 +8,4 @@ const NavBar: FC = () => {
   );
 };
 
-export default NavBar;
+export default Navbar;

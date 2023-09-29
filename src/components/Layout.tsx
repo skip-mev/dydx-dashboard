@@ -1,10 +1,10 @@
 import { ComponentProps } from "react";
-import NavBar from "./NavBar";
+import Navbar from "./NavBar";
 
 function Layout({ children, ...props }: ComponentProps<"main">) {
   return (
     <main {...props}>
-      <NavBar />
+      <Navbar />
       <div className="md:px-4">
         <div className="max-w-screen-lg mx-auto">{children}</div>
       </div>
