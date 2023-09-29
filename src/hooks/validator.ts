@@ -1,5 +1,6 @@
 import { getValidatorStats, getValidators } from "@/api";
 import { Validator, ValidatorWithStats } from "@/types/base";
+import { ValidatorComparer } from "@/types/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useLatestHeightQuery } from "./height";
@@ -57,9 +58,7 @@ export function useValidatorsWithStatsQuery<T = ValidatorWithStats[]>(
         };
       }
 
-      const validatorWithStats = args.validators
-        .map(withStats)
-        .sort((a, b) => b.averageMev - a.averageMev);
+      const validatorWithStats = args.validators.map(withStats);
 
       return validatorWithStats;
     },

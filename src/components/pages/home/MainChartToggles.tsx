@@ -5,6 +5,7 @@ import {
   resetSelectedValidators,
   useHomeStore,
 } from "@/store/home";
+import { ValidatorComparer } from "@/types/utils";
 import { ComponentProps, useEffect } from "react";
 
 export const MainChartToggles = (props: ComponentProps<"div">) => {
@@ -18,7 +19,7 @@ export const MainChartToggles = (props: ComponentProps<"div">) => {
       if (hideInactive) {
         arr = arr.filter((validator) => validator.stake !== "0");
       }
-      return arr;
+      return arr.sort(ValidatorComparer.AVERAGE_MEV_DESC);
     },
   });
 

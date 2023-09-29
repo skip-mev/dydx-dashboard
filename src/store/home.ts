@@ -20,7 +20,7 @@ export const useHomeStore = /* @__PURE__ */ create(
   subscribeWithSelector<HomeStore>(() => ({
     searchValue: "",
     blocks: 43200,
-    sortBy: "stake",
+    sortBy: "averageMev",
     sortDirection: "desc",
     selectedValidators: [],
     selectedValidatorsSet: new Set(),
