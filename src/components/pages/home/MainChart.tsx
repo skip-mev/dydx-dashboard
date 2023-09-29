@@ -38,10 +38,15 @@ export const MainChart = () => {
   }, [mainChartData?.points]);
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={300} className="overflow-hidden">
       <LineChart
         data={chartData}
-        margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+        margin={{
+          // bottom: 5,
+          left: 16,
+          right: 32,
+          // top: 5,
+        }}
       >
         <XAxis
           dataKey="key"

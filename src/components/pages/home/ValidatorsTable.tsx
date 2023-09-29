@@ -1,4 +1,3 @@
-import Card, { CardProps } from "@/components/Card";
 import {
   Table,
   TableBody,
@@ -11,12 +10,13 @@ import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
 import { useValidatorsWithStatsQuery } from "@/hooks";
 import { usdIntl } from "@/lib/intl";
 import { useHomeStore, useHomeStoreValidatorComparer } from "@/store/home";
+import clsx from "clsx";
 import { formatUnits } from "ethers";
 import { matchSorter } from "match-sorter";
 import Link from "next/link";
 import { useMemo } from "react";
 
-export const ValidatorsTable = (props: CardProps) => {
+export const ValidatorsTable = () => {
   const blocks = useHomeStore((state) => state.blocks);
   const hideInactive = useHomeStore((state) => state.hideInactive);
   const searchValue = useHomeStore((state) => state.searchValue);
@@ -47,59 +47,71 @@ export const ValidatorsTable = (props: CardProps) => {
   }, [validators]);
 
   return (
-    <Card className="relative" {...props}>
-      <Table>
-        <TableHeader>
-          <TableHead>Validator</TableHead>
-          <TableHead align="right">
-            <span>
-              Avg. Orderbook <br /> Discrepancy
-            </span>
+    <div className="max-w-full overflow-auto md:[overflow:unset]">
+      <Table className="bg-light-3 rounded-none md:rounded-lg w-full">
+        <TableHeader
+          className={clsx(
+            "md:[&>:first-child]:rounded-tl-lg",
+            "md:[&>:last-child]:rounded-tr-lg",
+            "sticky -top-1 inset-x-0 z-[1]"
+          )}
+        >
+          <TableHead className="text-start max-w-[50vw] w-2/4">
+            Validator
           </TableHead>
-          <TableHead align="right">Stake Weight</TableHead>
+          <TableHead className="text-end w-1/4">
+            Avg. Orderbook Discrepancy
+          </TableHead>
+          <TableHead className="text-end w-1/4">Stake Weight</TableHead>
         </TableHeader>
         <TableBody>
           {!validators &&
-            Array.from({ length: 20 }).map((_, index) => (
-              <TableRow key={index}>
-                <TableCell className="w-[400px]">
-                  <div className="w-full h-5 bg-white/5"></div>
+            Array.from({ length: 20 }, (_, i) => (
+              <TableRow key={i}>
+                <TableCell className="w-2/4">
+                  <div className="w-full h-5 bg-white/5" />
                 </TableCell>
-                <TableCell className="w-[208px]">
-                  <div className="w-full h-5 bg-white/5"></div>
+                <TableCell className="w-1/4">
+                  <div className="w-full h-5 bg-white/5" />
                 </TableCell>
-                <TableCell className="w-[208px]">
-                  <div className="w-full h-5 bg-white/5"></div>
-                </TableCell>
-                <TableCell className="w-[208px] flex justify-end">
-                  <div className="w-10/12 h-5 bg-white/5"></div>
+                <TableCell className="w-1/4">
+                  <div className="w-full h-5 bg-white/5" />
                 </TableCell>
               </TableRow>
             ))}
           {validators &&
-            validators.map((validator) => {
+            validators.map((validator, i) => {
               const stake = parseFloat(formatUnits(validator.stake, 6));
               const stakePercent = (stake / totalStake) * 100;
-
               const averageMev = parseFloat(
                 formatUnits(validator.averageMev, 6)
               );
-
+              const isLast = i === validators.length - 1;
               return (
-                <TableRow key={validator.pubkey}>
-                  <TableCell className="w-[400px] truncate">
+                <TableRow
+                  key={validator.pubkey}
+                  className={clsx({
+                    relative: true,
+                    "md:[&>:first-child]:rounded-bl-lg": isLast,
+                    "md:[&>:last-child]:rounded-br-lg": isLast,
+                  })}
+                >
+                  <TableCell className="max-w-[50vw] w-2/4">
                     <Link
-                      className="text-[#6398FF] inline-flex items-center gap-1 hover:underline"
+                      className={clsx(
+                        "text-[#6398FF] flex items-center gap-1 hover:underline overflow-hidden",
+                        "after:content-[''] after:absolute after:inset-0"
+                      )}
                       href={`/validators/${validator.pubkey}`}
                     >
-                      <span>{validator.moniker}</span>
+                      <span className="truncate">{validator.moniker}</span>
                       <ArrowRightTopIcon className="w-4 h-4" />
                     </Link>
                   </TableCell>
-                  <TableCell align="right" className="w-[208px]">
+                  <TableCell align="right" className="w-1/4">
                     {usdIntl.format(averageMev)}
                   </TableCell>
-                  <TableCell align="right" className="w-[208px]">
+                  <TableCell align="right" className="w-1/4">
                     {stakePercent.toFixed(2)}%
                   </TableCell>
                 </TableRow>
@@ -107,6 +119,6 @@ export const ValidatorsTable = (props: CardProps) => {
             })}
         </TableBody>
       </Table>
-    </Card>
+    </div>
   );
 };
