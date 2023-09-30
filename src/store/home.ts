@@ -78,10 +78,10 @@ export function resetSelectedMoniker(
 }
 
 export function setHighlightedMoniker(
-  value: Pick<ValidatorWithStats, "moniker">
+  value: Pick<ValidatorWithStats, "moniker"> | undefined
 ) {
   useHomeStore.setState({
-    highlightedMoniker: value.moniker,
+    highlightedMoniker: value?.moniker,
   });
 }
 
