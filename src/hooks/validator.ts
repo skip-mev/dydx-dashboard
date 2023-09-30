@@ -5,7 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useLatestHeightQuery } from "./height";
 
-export function useValidatorsQuery() {
+export type UseValidatorsQueryArgs<T = Validator[]> = {
+  select?: (arr?: Validator[]) => T;
+};
+
+export function useValidatorsQuery<T = Validator[]>(
+  args: UseValidatorsQueryArgs<T> = {}
+) {
+  const { select = (t) => t as T } = args;
+
   const queryKey = useMemo(() => ["USE_VALIDATORS"] as const, []);
 
   return useQuery({
@@ -14,6 +22,7 @@ export function useValidatorsQuery() {
       return getValidators();
     },
     keepPreviousData: true,
+    select,
   });
 }
 
