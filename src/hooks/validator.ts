@@ -1,9 +1,17 @@
 import { getValidatorStats, getValidators } from "@/api";
+import { stringOrUndefined } from "@/lib/string";
 import { Validator, ValidatorWithStats } from "@/types/base";
-import { ValidatorComparer } from "@/types/utils";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useLatestHeightQuery } from "./height";
+
+export function useValidatorPageQuery() {
+  const router = useRouter();
+  return {
+    pubkey: stringOrUndefined(router.query.pubkey),
+  };
+}
 
 export type UseValidatorsQueryArgs<T = Validator[]> = {
   select?: (arr?: Validator[]) => T;
