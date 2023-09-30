@@ -1,10 +1,6 @@
 import CustomTooltip from "@/components/CustomTooltip";
 import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
-import {
-  addSelectedValidator,
-  removeSelectedValidator,
-  useHomeStore,
-} from "@/store/home";
+import { toggleSelectedMoniker, useHomeStore } from "@/store/home";
 import { useMemo } from "react";
 import {
   Tooltip as ChartTooltip,
@@ -18,8 +14,8 @@ import {
 export const MainChart = () => {
   const blocks = useHomeStore((state) => state.blocks);
   const hideInactive = useHomeStore((state) => state.hideInactive);
-  const highlighted = useHomeStore((state) => state.highlightedValidator);
-  const selected = useHomeStore((state) => state.selectedValidators);
+  const highlighted = useHomeStore((state) => state.highlightedMoniker);
+  const selected = useHomeStore((state) => state.selectedMonikers);
 
   const { data: validators = [] } = useValidatorsWithStatsQuery({
     blocks,
@@ -81,26 +77,20 @@ export const MainChart = () => {
                 dot={false}
                 dataKey={validator.moniker}
                 stroke={
-                  selected.includes(validator)
+                  selected[validator.moniker]
                     ? "#b51717"
-                    : validator.moniker === highlighted?.moniker
+                    : validator.moniker === highlighted
                     ? "#34F3FF"
                     : "#8884d8"
                 }
                 isAnimationActive={false}
                 opacity={
-                  selected.includes(validator) ||
-                  validator.moniker === highlighted?.moniker
+                  selected[validator.moniker] ||
+                  validator.moniker === highlighted
                     ? 1
                     : 0.3
                 }
-                onClick={() => {
-                  if (selected.includes(validator)) {
-                    removeSelectedValidator(validator);
-                  } else {
-                    addSelectedValidator(validator);
-                  }
-                }}
+                onClick={() => toggleSelectedMoniker(validator)}
               ></Line>
             );
           })}

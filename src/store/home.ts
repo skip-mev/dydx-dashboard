@@ -9,10 +9,8 @@ export interface HomeStore {
   blocks: number;
   sortBy: "validator" | "averageMev" | "stake" | (string & {});
   sortDirection: "asc" | "desc" | (string & {});
-  /** @deprecated */
-  selectedValidators: ValidatorWithStats[];
-  selectedValidatorsSet: Set<ValidatorWithStats["moniker"]>;
-  highlightedValidator: ValidatorWithStats | undefined;
+  selectedMonikers: Record<ValidatorWithStats["moniker"], boolean>;
+  highlightedMoniker: ValidatorWithStats["moniker"] | undefined;
   hideInactive: boolean;
 }
 
@@ -22,43 +20,68 @@ export const useHomeStore = /* @__PURE__ */ create(
     blocks: 43200,
     sortBy: "averageMev",
     sortDirection: "desc",
-    selectedValidators: [],
-    selectedValidatorsSet: new Set(),
-    highlightedValidator: undefined,
+    selectedMonikers: {},
+    highlightedMoniker: undefined,
     hideInactive: true,
   }))
 );
 
-export function addSelectedValidator(value: ValidatorWithStats) {
+export function hasSelectedMoniker(value: Pick<ValidatorWithStats, "moniker">) {
+  const { selectedMonikers } = useHomeStore.getState();
+  return selectedMonikers[value.moniker] ?? false;
+}
+
+export function addSelectedMoniker(value: Pick<ValidatorWithStats, "moniker">) {
   useHomeStore.setState((current) => {
-    const moniker = value.moniker;
-    const latest = new Set(current.selectedValidatorsSet);
-    latest.add(moniker);
+    const latest = {
+      ...current.selectedMonikers,
+      [value.moniker]: true,
+    };
     return {
-      selectedValidators: current.selectedValidators.concat(value),
-      selectedValidatorsSet: latest,
+      selectedMonikers: latest,
     };
   });
 }
 
-export function removeSelectedValidator(value: ValidatorWithStats) {
+export function removeSelectedMoniker(
+  value: Pick<ValidatorWithStats, "moniker">
+) {
   useHomeStore.setState((current) => {
-    const moniker = value.moniker;
-    const latest = new Set(current.selectedValidatorsSet);
-    latest.delete(moniker);
+    const { [value.moniker]: _, ...latest } = current.selectedMonikers;
+
     return {
-      selectedValidators: current.selectedValidators.filter(
-        (v) => v.moniker !== moniker
-      ),
-      selectedValidatorsSet: latest,
+      selectedMonikers: latest,
     };
   });
 }
 
-export function resetSelectedValidators(value?: ValidatorWithStats[]) {
+export function toggleSelectedMoniker(
+  value: Pick<ValidatorWithStats, "moniker">
+) {
+  if (hasSelectedMoniker(value)) {
+    removeSelectedMoniker(value);
+  } else {
+    addSelectedMoniker(value);
+  }
+}
+
+export function resetSelectedMoniker(
+  value?: Pick<ValidatorWithStats, "moniker">[]
+) {
+  const latest: HomeStore["selectedMonikers"] = {};
+  value?.forEach((v) => {
+    latest[v.moniker] = true;
+  });
   useHomeStore.setState({
-    selectedValidators: value ?? [],
-    selectedValidatorsSet: new Set(value?.map((v) => v.moniker) ?? []),
+    selectedMonikers: latest,
+  });
+}
+
+export function setHighlightedMoniker(
+  value: Pick<ValidatorWithStats, "moniker">
+) {
+  useHomeStore.setState({
+    highlightedMoniker: value.moniker,
   });
 }
 
