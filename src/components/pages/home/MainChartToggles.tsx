@@ -8,9 +8,9 @@ import {
 import { Validator } from "@/types/base";
 import { ValidatorComparer } from "@/types/utils";
 import clsx from "clsx";
-import { ComponentProps, memo, useEffect } from "react";
+import { memo, useEffect } from "react";
 
-export const MainChartToggles = (props: ComponentProps<"div">) => {
+export const MainChartToggles = () => {
   const blocks = useHomeStore((state) => state.blocks);
   const hideInactive = useHomeStore((state) => state.hideInactive);
 
@@ -40,7 +40,7 @@ export const MainChartToggles = (props: ComponentProps<"div">) => {
   }, [validators]);
 
   return (
-    <div {...props}>
+    <div className="flex justify-center gap-2 flex-wrap pt-8 h-full max-h-32 md:max-h-full overflow-hidden">
       {validators?.map((validator) => (
         <ToggleMoniker key={validator.pubkey} moniker={validator.moniker} />
       ))}

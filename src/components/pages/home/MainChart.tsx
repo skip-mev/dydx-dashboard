@@ -1,6 +1,7 @@
 import CustomTooltip from "@/components/CustomTooltip";
 import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import { toggleSelectedMoniker, useHomeStore } from "@/store/home";
+import clsx from "clsx";
 import { useMemo } from "react";
 import {
   Tooltip as ChartTooltip,
@@ -31,17 +32,21 @@ export const MainChart = () => {
     return mainChartData?.points ?? [];
   }, [mainChartData?.points]);
 
+  if (chartData.length < 1) {
+    return (
+      <div
+        className={clsx(
+          "w-full h-[300px] relative",
+          "before:content-[''] before:absolute before:inset-0 before:left-9",
+          "before:rounded-sm before:bg-white/5 before:animate-pulse"
+        )}
+      />
+    );
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={300} className="overflow-hidden">
-      <LineChart
-        data={chartData}
-        margin={{
-          // bottom: 5,
-          left: 16,
-          right: 32,
-          // top: 5,
-        }}
-      >
+    <ResponsiveContainer className="overflow-hidden" height={300} width="100%">
+      <LineChart data={chartData} margin={{ left: 16, right: 32 }}>
         <XAxis
           dataKey="key"
           axisLine={false}
