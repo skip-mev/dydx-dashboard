@@ -63,6 +63,7 @@ export function toggleSelectedMoniker(
   } else {
     addSelectedMoniker(value);
   }
+  setHighlightedMoniker(undefined);
 }
 
 export function resetSelectedMoniker(
