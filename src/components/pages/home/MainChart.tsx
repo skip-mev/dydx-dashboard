@@ -14,8 +14,6 @@ import {
 export const MainChart = () => {
   const blocks = useHomeStore((state) => state.blocks);
   const hideInactive = useHomeStore((state) => state.hideInactive);
-  const highlighted = useHomeStore((state) => state.highlightedMoniker);
-  const selected = useHomeStore((state) => state.selectedMonikers);
 
   const { data: validators = [] } = useValidatorsWithStatsQuery({
     blocks,
@@ -69,32 +67,47 @@ export const MainChart = () => {
           }}
         />
         <ChartTooltip content={CustomTooltip} />
-        {validators &&
-          validators.map((validator) => {
-            return (
-              <Line
-                key={validator.pubkey}
-                dot={false}
-                dataKey={validator.moniker}
-                stroke={
-                  selected[validator.moniker]
-                    ? "#b51717"
-                    : validator.moniker === highlighted
-                    ? "#34F3FF"
-                    : "#8884d8"
-                }
-                isAnimationActive={false}
-                opacity={
-                  selected[validator.moniker] ||
-                  validator.moniker === highlighted
-                    ? 1
-                    : 0.3
-                }
-                onClick={() => toggleSelectedMoniker(validator)}
-              ></Line>
-            );
-          })}
+        {validators?.map((validator) => (
+          <MutatedLine
+            key={validator.pubkey}
+            dot={false}
+            dataKey={validator.moniker}
+            isAnimationActive={false}
+            onClick={() => toggleSelectedMoniker(validator)}
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );
 };
+
+class MutatedLine extends Line {
+  unsub?: () => void;
+
+  componentDidMount() {
+    this.unsub = useHomeStore.subscribe(
+      (state) => [state.highlightedMoniker, state.selectedMonikers] as const,
+      ([highlighted, selected]) => {
+        if (typeof this.props.dataKey !== "string" || !this.mainCurve) return;
+
+        const isHighlighted = this.props.dataKey === highlighted;
+        const isSelected = selected[this.props.dataKey];
+
+        this.mainCurve.style.stroke = isHighlighted
+          ? "#34F3FF"
+          : isSelected
+          ? "#b51717"
+          : "#8884d8";
+        this.mainCurve.style.opacity =
+          isHighlighted || isSelected ? "1" : "0.3";
+      },
+      {
+        fireImmediately: true,
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    this.unsub?.();
+  }
+}
