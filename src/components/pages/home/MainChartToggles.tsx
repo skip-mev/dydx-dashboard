@@ -56,9 +56,9 @@ const ToggleMoniker = memo(
       <button
         className={clsx(
           "text-xs py-1 px-2 rounded-md",
-          "bg-white/5 hover:bg-[#b51717]",
-          "data-[highlighted=true]:bg-[#34f1ff84]",
-          "data-[selected=true]:bg-[#b51717]"
+          "bg-white/5 hover:bg-[#B51717FF] transition-colors duration-100",
+          "data-[highlighted=true]:bg-[#34F1FFAA] data-[highlighted=true]:hover:bg-[#34F1FFAA]",
+          "data-[selected=true]:bg-[#b51717FF]"
         )}
         onClick={() => toggleSelectedMoniker({ moniker })}
         onMouseEnter={() => setHighlightedMoniker({ moniker })}
