@@ -2,7 +2,7 @@ import { Validator, ValidatorWithStats } from "@/types/base";
 import { ValidatorComparer } from "@/types/utils";
 import { useCallback } from "react";
 import { create } from "zustand";
-import { subscribeWithSelector } from "zustand/middleware";
+import { persist, subscribeWithSelector } from "zustand/middleware";
 
 export interface HomeStore {
   searchValue: string;
@@ -15,15 +15,24 @@ export interface HomeStore {
 }
 
 export const useHomeStore = /* @__PURE__ */ create(
-  subscribeWithSelector<HomeStore>(() => ({
-    searchValue: "",
-    blocks: 43200,
-    sortBy: "averageMev",
-    sortDirection: "desc",
-    selectedMonikers: {},
-    highlightedMoniker: undefined,
-    hideInactive: true,
-  }))
+  persist(
+    subscribeWithSelector<HomeStore>(() => ({
+      searchValue: "",
+      blocks: 43200,
+      sortBy: "averageMev",
+      sortDirection: "desc",
+      selectedMonikers: {},
+      highlightedMoniker: undefined,
+      hideInactive: true,
+    })),
+    {
+      name: "dydx-dashboard",
+      version: 1,
+      partialize: (state) => ({
+        selectedMonikers: state.selectedMonikers,
+      }),
+    }
+  )
 );
 
 export function hasSelectedMoniker(value: Pick<ValidatorWithStats, "moniker">) {
