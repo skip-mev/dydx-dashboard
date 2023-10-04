@@ -12,7 +12,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useMemo } from "react";
 import {
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,

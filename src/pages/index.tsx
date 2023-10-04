@@ -11,6 +11,8 @@ import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
 import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
 import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
+import { DydxIcon } from "@/components/icons/Dydx";
+import { SkipIcon } from "@/components/icons/Skip";
 import clsx from "clsx";
 
 export default function Home() {
@@ -24,9 +26,9 @@ export default function Home() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="space-y-5">
             <div className="flex items-center gap-4 justify-center md:justify-start">
-              <img className="h-8" src="/dydx-logo.svg" alt="" />
+              <DydxIcon className="h-8" />
               <span className="text-4xl leading-[32px] font-black">/</span>
-              <img className="h-8" src="/skip-logo.svg" alt="" />
+              <SkipIcon className="h-8" />
             </div>
             <p className="font-mono font-bold text-xl text-center md:text-start">
               Orderbook Discrepancy
