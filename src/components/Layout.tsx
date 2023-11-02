@@ -1,15 +1,15 @@
-import { FC, PropsWithChildren } from "react";
-import NavBar from "./NavBar";
+import { ComponentProps } from "react";
+import Navbar from "./Navbar";
 
-const Layout: FC<PropsWithChildren> = ({ children }) => {
+function Layout({ children, ...props }: ComponentProps<"main">) {
   return (
-    <div>
-      <NavBar />
-      <div className="px-4">
+    <main {...props}>
+      <Navbar />
+      <div className="md:px-4">
         <div className="max-w-screen-lg mx-auto">{children}</div>
       </div>
-    </div>
+    </main>
   );
-};
+}
 
 export default Layout;

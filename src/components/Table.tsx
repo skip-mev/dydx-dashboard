@@ -1,66 +1,63 @@
-import { FC, PropsWithChildren } from "react";
+import clsx from "clsx";
+import { ComponentProps, forwardRef } from "react";
 
-export const Table: FC<PropsWithChildren> = ({ children }) => {
+export const Table = ({ className, ...props }: ComponentProps<"table">) => {
   return (
-    <div className="w-full overflow-x-auto pb-4">
-      <table className="w-full whitespace-nowrap font-mono">{children}</table>
-    </div>
+    <table
+      {...props}
+      className={clsx("border-separate border-spacing-0 font-mono", className)}
+    />
   );
 };
 
-export const TableHeader: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <thead className="text-left bg-white/5">
-      <tr>{children}</tr>
-    </thead>
-  );
-};
-
-export const TableBody: FC<PropsWithChildren> = ({ children }) => {
-  return <tbody>{children}</tbody>;
-};
-
-interface TableHeadProps extends PropsWithChildren {
-  align?: "left" | "center" | "right";
+export interface TableHeaderProps extends ComponentProps<"tr"> {
+  _thead?: ComponentProps<"thead">;
 }
 
-export const TableHead: FC<TableHeadProps> = ({ align = "left", children }) => {
+export const TableHeader = forwardRef<HTMLTableRowElement, TableHeaderProps>(
+  function TableHeader({ _thead, ...props }, ref) {
+    return (
+      <thead {..._thead}>
+        <tr
+          {...props}
+          className={`bg-[#282829] ${props.className}`}
+          ref={ref}
+        />
+      </thead>
+    );
+  }
+);
+
+export const TableBody = (props: ComponentProps<"tbody">) => {
+  return <tbody {...props} />;
+};
+
+export const TableHead = ({ className, ...props }: ComponentProps<"th">) => {
   return (
     <th
-      className={`text-sm text-${align} text-white/70 font-normal px-3 first:pl-12 last:pr-12 py-5`}
-    >
-      {children}
-    </th>
+      className={clsx(
+        "text-sm text-white/70 font-normal",
+        "px-4 py-2 md:px-6 md:py-4",
+        className
+      )}
+      {...props}
+    />
   );
 };
 
-interface TableRowProps extends PropsWithChildren {
-  className?: string;
-}
-
-export const TableRow: FC<TableRowProps> = ({ children, className }) => {
-  return (
-    <tr className={`transition-colors hover:bg-[#262829] ${className}`}>
-      {children}
-    </tr>
-  );
+export const TableRow = ({ className, ...props }: ComponentProps<"tr">) => {
+  return <tr className={`hover:bg-[#262829AA] ${className}`} {...props} />;
 };
 
-interface TableCellProps extends PropsWithChildren {
-  align?: "left" | "center" | "right";
-  className?: string;
-}
-
-export const TableCell: FC<TableCellProps> = ({
-  align,
-  children,
-  className,
-}) => {
+export const TableCell = ({ className, ...props }: ComponentProps<"td">) => {
   return (
     <td
-      className={`text-sm text-${align} text-white whitespace-nowrap p-3 first:pl-12 last:pr-12 ${className}`}
-    >
-      {children}
-    </td>
+      className={clsx(
+        "text-sm text-white whitespace-nowrap",
+        "px-4 py-2 md:px-6 md:py-4",
+        className
+      )}
+      {...props}
+    />
   );
 };
