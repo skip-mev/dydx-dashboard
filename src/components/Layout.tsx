@@ -1,17 +1,17 @@
-import { FC, PropsWithChildren } from "react";
-import NavBar from "./NavBar";
+import { ComponentProps } from "react";
+import Navbar from "./Navbar";
 import WarningBanner from "./WarningBanner";
 
-const Layout: FC<PropsWithChildren> = ({ children }) => {
+function Layout({ children, ...props }: ComponentProps<"main">) {
   return (
-    <div>
-      <NavBar />
+    <main {...props}>
+      <Navbar />
       <WarningBanner />
-      <div className="px-4">
+      <div className="md:px-4">
         <div className="max-w-screen-lg mx-auto">{children}</div>
       </div>
-    </div>
+    </main>
   );
-};
+}
 
 export default Layout;
