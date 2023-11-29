@@ -91,7 +91,6 @@ export const ValidatorsTable = () => {
                 <TableRow
                   key={validator.pubkey}
                   className={clsx({
-                    relative: true,
                     "md:[&>:first-child]:rounded-bl-lg": isLast,
                     "md:[&>:last-child]:rounded-br-lg": isLast,
                   })}
@@ -99,8 +98,8 @@ export const ValidatorsTable = () => {
                   <TableCell className="max-w-[50vw] w-2/4">
                     <Link
                       className={clsx(
-                        "text-[#6398FF] flex items-center gap-1 hover:underline overflow-hidden",
-                        "after:content-[''] after:absolute after:inset-0"
+                        "text-[#6398FF] flex items-center gap-1 hover:underline relative",
+                        "after:content-[''] after:absolute after:-inset-4"
                       )}
                       href={`/validators/${validator.pubkey}`}
                     >
