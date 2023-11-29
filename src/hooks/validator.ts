@@ -29,7 +29,6 @@ export function useValidatorsQuery<T = Validator[]>(
     queryFn: async () => {
       return getValidators();
     },
-    keepPreviousData: true,
     select,
   });
 }
@@ -80,7 +79,6 @@ export function useValidatorsWithStatsQuery<T = ValidatorWithStats[]>(
       return validatorWithStats;
     },
     enabled: !!toHeight && !!validators,
-    keepPreviousData: true,
     select,
   });
 }

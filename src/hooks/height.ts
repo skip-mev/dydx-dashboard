@@ -14,6 +14,5 @@ export function useLatestHeightQuery() {
     queryFn: async () => {
       return getLatestHeight();
     },
-    keepPreviousData: true,
   });
 }
