@@ -1,5 +1,5 @@
-import { FC, PropsWithChildren } from "react";
 import * as RadixSelect from "@radix-ui/react-select";
+import { FC, PropsWithChildren } from "react";
 
 export interface SelectProps extends PropsWithChildren {
   defaultValue?: string;
@@ -34,7 +34,7 @@ interface SelectTriggerProps {
 export const SelectTrigger: FC<SelectTriggerProps> = ({ className }) => {
   return (
     <RadixSelect.Trigger
-      className={`text-sm text-light-70 hover:text-white hover:bg-[#262829] inline-flex gap-1.5 items-center justify-between py-1 pl-3 pr-1 rounded transition-colors focus:outline-none whitespace-nowrap ${className}`}
+      className={`text-sm text-light-700 hover:text-white hover:bg-[#262829] inline-flex gap-1.5 items-center justify-between py-1 pl-3 pr-1 rounded transition-colors focus:outline-none whitespace-nowrap ${className}`}
     >
       <RadixSelect.Value className="truncate"></RadixSelect.Value>
       <RadixSelect.Icon>
