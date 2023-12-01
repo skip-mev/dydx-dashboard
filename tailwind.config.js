@@ -27,6 +27,10 @@ const tailwindConfig = {
         "fade-right": "fade-right 2s both infinite",
       },
       colors: {
+        dydx: {
+          alert: "#FF486E",
+          bg: "#151617",
+        },
         light: {
           30: "#F3F6F808",
           50: "#F3F6F80D",
