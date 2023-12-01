@@ -7,7 +7,7 @@ export default function Document() {
         <meta charSet="UTF-8" />
         <meta content="ie=edge" httpEquiv="X-UA-Compatible" />
       </Head>
-      <body className="bg-[#151617] text-white">
+      <body className="bg-dydx-bg text-white">
         <Main />
         <NextScript />
       </body>

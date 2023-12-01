@@ -18,11 +18,7 @@ export const TableHeader = forwardRef<HTMLTableRowElement, TableHeaderProps>(
   function TableHeader({ _thead, ...props }, ref) {
     return (
       <thead {..._thead}>
-        <tr
-          {...props}
-          className={`bg-[#282829] ${props.className}`}
-          ref={ref}
-        />
+        <tr {...props} className={`bg-zinc-800 ${props.className}`} ref={ref} />
       </thead>
     );
   }
@@ -46,7 +42,7 @@ export const TableHead = ({ className, ...props }: ComponentProps<"th">) => {
 };
 
 export const TableRow = ({ className, ...props }: ComponentProps<"tr">) => {
-  return <tr className={`hover:bg-[#262829AA] ${className}`} {...props} />;
+  return <tr className={`hover:bg-zinc-700 ${className}`} {...props} />;
 };
 
 export const TableCell = ({ className, ...props }: ComponentProps<"td">) => {
