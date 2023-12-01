@@ -51,8 +51,8 @@ export const DydxMonoIcon = (props: ComponentProps<"svg">) => {
           y2={12.411}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="currentColor" />
-          <stop offset={1} stop-color="currentColor" stop-opacity={0.55} />
+          <stop stopColor="currentColor" />
+          <stop offset={1} stopColor="currentColor" stopOpacity={0.55} />
         </linearGradient>
         <linearGradient
           id="prefix__paint1_linear_172_852_mono"
@@ -62,8 +62,8 @@ export const DydxMonoIcon = (props: ComponentProps<"svg">) => {
           y2={12.999}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="currentColor" />
-          <stop offset={1} stop-color="currentColor" stop-opacity={0.36} />
+          <stop stopColor="currentColor" />
+          <stop offset={1} stopColor="currentColor" stopOpacity={0.36} />
         </linearGradient>
         <linearGradient
           id="prefix__paint2_linear_172_852_mono"
@@ -73,8 +73,8 @@ export const DydxMonoIcon = (props: ComponentProps<"svg">) => {
           y2={13.012}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="currentColor" />
-          <stop offset={1} stop-color="currentColor" stop-opacity={0.55} />
+          <stop stopColor="currentColor" />
+          <stop offset={1} stopColor="currentColor" stopOpacity={0.55} />
         </linearGradient>
         <clipPath id="prefix__clip0_172_852_mono">
           <path fill="currentColor" d="M0 0h96.372v30H0z" />

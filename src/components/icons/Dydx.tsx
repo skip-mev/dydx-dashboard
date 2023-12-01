@@ -45,8 +45,8 @@ export const DydxIcon = (props: ComponentProps<"svg">) => {
           y2={12.411}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#fff" />
-          <stop offset={1} stop-color="#fff" stop-opacity={0.55} />
+          <stop stopColor="#fff" />
+          <stop offset={1} stopColor="#fff" stopOpacity={0.55} />
         </linearGradient>
         <linearGradient
           id="prefix__paint1_linear_172_852"
@@ -56,8 +56,8 @@ export const DydxIcon = (props: ComponentProps<"svg">) => {
           y2={12.999}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6966FF" />
-          <stop offset={1} stop-color="#6966FF" stop-opacity={0.36} />
+          <stop stopColor="#6966FF" />
+          <stop offset={1} stopColor="#6966FF" stopOpacity={0.36} />
         </linearGradient>
         <linearGradient
           id="prefix__paint2_linear_172_852"
@@ -67,8 +67,8 @@ export const DydxIcon = (props: ComponentProps<"svg">) => {
           y2={13.012}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#fff" />
-          <stop offset={1} stop-color="#fff" stop-opacity={0.55} />
+          <stop stopColor="#fff" />
+          <stop offset={1} stopColor="#fff" stopOpacity={0.55} />
         </linearGradient>
         <clipPath id="prefix__clip0_172_852">
           <path fill="#fff" d="M0 0h96.372v30H0z" />
