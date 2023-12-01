@@ -9,6 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fontsource-variable/inconsolata": "^5.0.15",
+    "@fontsource-variable/inter": "^5.0.15",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-tooltip": "^1.0.7",

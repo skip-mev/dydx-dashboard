@@ -1,6 +1,6 @@
 // @ts-check
 
-const defaultTheme = require("tailwindcss/defaultTheme");
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
 /**
  * @type {import("tailwindcss").Config}
@@ -44,8 +44,8 @@ const tailwindConfig = {
         },
       },
       fontFamily: {
-        mono: ["Inconsolata", ...defaultTheme.fontFamily.mono],
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        mono: ["Inconsolata Variable", "Inconsolata", ...fontFamily.mono],
+        sans: ["Inter Variable", "Inter", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
