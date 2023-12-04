@@ -1,6 +1,7 @@
 import { getValidatorStats, getValidators } from "@/api";
 import { stringOrUndefined } from "@/lib/string";
 import { Validator, ValidatorWithStats } from "@/types/base";
+import { slugifyWithCounter } from "@sindresorhus/slugify";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -67,9 +68,12 @@ export function useValidatorsWithStatsQuery<T = ValidatorWithStats[]>(
         toHeight: args.toHeight,
       });
 
+      const slugify = slugifyWithCounter();
+
       function withStats(validator: Validator): ValidatorWithStats {
         return {
           ...validator,
+          slug: slugify(validator.moniker),
           averageMev: parseFloat(stats[validator.pubkey]) || 0.0,
         };
       }

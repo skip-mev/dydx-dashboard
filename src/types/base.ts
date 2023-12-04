@@ -25,6 +25,7 @@ export type Validator = {
 };
 
 export type ValidatorWithStats = Validator & {
+  slug: string;
   averageMev: number;
 };
 
