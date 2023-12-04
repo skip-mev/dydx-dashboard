@@ -7,6 +7,7 @@ const { fontFamily } = require("tailwindcss/defaultTheme");
  * @see https://tailwindcss.com/docs/theme
  */
 const tailwindConfig = {
+  darkMode: "class",
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
