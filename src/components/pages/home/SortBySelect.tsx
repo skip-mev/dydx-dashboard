@@ -13,12 +13,14 @@ const options: { value: HomeStore["sortBy"]; label: string }[] = [
 ];
 
 export const SortBySelect = () => {
+  const sortBy = useHomeStore((state) => state.sortBy);
+
   const handleChange = (value: string) => {
     useHomeStore.setState({ sortBy: value });
   };
 
   return (
-    <Select defaultValue="stake" onValueChange={handleChange}>
+    <Select value={sortBy} onValueChange={handleChange}>
       <SelectTrigger />
       <SelectContent>
         {options.map(({ value, label }) => (
