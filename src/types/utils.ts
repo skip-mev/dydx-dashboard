@@ -1,12 +1,17 @@
+import slugify from "@sindresorhus/slugify";
 import { formatUnits } from "ethers";
 import { Validator, ValidatorWithStats } from "./base";
 
 export const ValidatorComparer = {
   VALIDATOR_ASC: <T extends Validator | ValidatorWithStats>(a: T, b: T) => {
-    return a.moniker.localeCompare(b.moniker);
+    const left = "slug" in a ? a.slug : slugify(a.moniker);
+    const right = "slug" in b ? b.slug : slugify(b.moniker);
+    return left.localeCompare(right);
   },
   VALIDATOR_DESC: <T extends Validator | ValidatorWithStats>(a: T, b: T) => {
-    return b.moniker.localeCompare(a.moniker);
+    const left = "slug" in a ? a.slug : slugify(a.moniker);
+    const right = "slug" in b ? b.slug : slugify(b.moniker);
+    return right.localeCompare(left);
   },
   AVERAGE_MEV_ASC: <T extends ValidatorWithStats>(a: T, b: T) => {
     const aMev = parseFloat(formatUnits(a.averageMev, 6));
