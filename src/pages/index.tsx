@@ -1,19 +1,17 @@
-/* eslint-disable @next/next/no-img-element */
-import { Fragment } from "react";
 import Card from "@/components/Card";
-import Head from "next/head";
-import { SearchInput } from "@/components/pages/home/SearchInput";
-import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
-import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
-import { SortBySelect } from "@/components/pages/home/SortBySelect";
-import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
-import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
-import { MainChart } from "@/components/pages/home/MainChart";
-import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
-import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
 import { DydxIcon } from "@/components/icons/Dydx";
 import { SkipIcon } from "@/components/icons/Skip";
+import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
+import { MainChart } from "@/components/pages/home/MainChart";
+import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
+import { SearchInput } from "@/components/pages/home/SearchInput";
+import { SortBySelect } from "@/components/pages/home/SortBySelect";
+import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
+import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
+import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
+import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable/legacy";
 import clsx from "clsx";
+import Head from "next/head";
 
 export default function Home() {
   return (
