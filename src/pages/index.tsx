@@ -1,17 +1,17 @@
-/* eslint-disable @next/next/no-img-element */
-import { Fragment } from "react";
 import Card from "@/components/Card";
-import Head from "next/head";
-import { SearchInput } from "@/components/pages/home/SearchInput";
+import { DydxIcon } from "@/components/icons/Dydx";
+import { SkipIcon } from "@/components/icons/Skip";
 import { InactiveToggle } from "@/components/pages/home/InactiveToggle";
-import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
-import { SortBySelect } from "@/components/pages/home/SortBySelect";
-import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
-import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable";
 import { MainChart } from "@/components/pages/home/MainChart";
 import { MainChartToggles } from "@/components/pages/home/MainChartToggles";
+import { SearchInput } from "@/components/pages/home/SearchInput";
+import { SortBySelect } from "@/components/pages/home/SortBySelect";
+import { SortOrderButton } from "@/components/pages/home/SortOrderButton";
+import { TimeframeSelect } from "@/components/pages/home/TimeframeSelect";
 import { ValidatorLoadingIndicator } from "@/components/pages/home/ValidatorLoadingIndicator";
+import { ValidatorsTable } from "@/components/pages/home/ValidatorsTable/legacy";
 import clsx from "clsx";
+import Head from "next/head";
 
 export default function Home() {
   return (
@@ -24,9 +24,9 @@ export default function Home() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="space-y-5">
             <div className="flex items-center gap-4 justify-center md:justify-start">
-              <img className="h-8" src="/dydx-logo.svg" alt="" />
+              <DydxIcon className="h-8" />
               <span className="text-4xl leading-[32px] font-black">/</span>
-              <img className="h-8" src="/skip-logo.svg" alt="" />
+              <SkipIcon className="h-8" />
             </div>
             <p className="font-mono font-bold text-xl text-center md:text-start">
               Orderbook Discrepancy

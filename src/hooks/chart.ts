@@ -1,5 +1,4 @@
-import { fetcher } from "@/lib/fetcher";
-import { MainChartData } from "@/types/base";
+import { getMainChartData } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -12,9 +11,7 @@ export function useMainChartData() {
   return useQuery({
     queryKey,
     queryFn: async () => {
-      const endpoint = "/api/main-chart-data";
-      const data = await fetcher<MainChartData>(endpoint);
-      return data;
+      return await getMainChartData();
     },
   });
 }

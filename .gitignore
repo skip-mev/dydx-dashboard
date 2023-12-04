@@ -5,6 +5,7 @@
 .next
 .turbo
 .vercel
+.vscode
 *.log
 **/node_modules/
 pnpm-lock.yaml

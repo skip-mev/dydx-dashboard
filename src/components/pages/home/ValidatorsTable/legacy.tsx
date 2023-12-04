@@ -7,9 +7,14 @@ import {
   TableRow,
 } from "@/components/Table";
 import { ArrowRightTopIcon } from "@/components/icons/ArrowRightTop";
+import { SortIcon } from "@/components/icons/Sort";
 import { useValidatorsWithStatsQuery } from "@/hooks";
 import { usdIntl } from "@/lib/intl";
-import { useHomeStore, useHomeStoreValidatorComparer } from "@/store/home";
+import {
+  HomeStore,
+  useHomeStore,
+  useHomeStoreValidatorComparer,
+} from "@/store/home";
 import clsx from "clsx";
 import { formatUnits } from "ethers";
 import { matchSorter } from "match-sorter";
@@ -20,6 +25,8 @@ export const ValidatorsTable = () => {
   const blocks = useHomeStore((state) => state.blocks);
   const hideInactive = useHomeStore((state) => state.hideInactive);
   const searchValue = useHomeStore((state) => state.searchValue);
+  const sortBy = useHomeStore((state) => state.sortBy);
+  const sortDirection = useHomeStore((state) => state.sortDirection);
 
   const validatorComparer = useHomeStoreValidatorComparer();
 
@@ -46,9 +53,23 @@ export const ValidatorsTable = () => {
     return total;
   }, [validators]);
 
+  function handleSort(sortBy: HomeStore["sortBy"]) {
+    useHomeStore.setState((prev) => ({
+      sortBy,
+      sortDirection:
+        prev.sortBy === sortBy
+          ? prev.sortDirection === "asc"
+            ? "desc"
+            : "asc"
+          : sortBy === "validator"
+          ? "asc"
+          : "desc",
+    }));
+  }
+
   return (
     <div className="max-w-full overflow-auto md:[overflow:unset] min-h-[75vh]">
-      <Table className="bg-light-3 rounded-none md:rounded-lg w-full">
+      <Table className="bg-light-30 rounded-none md:rounded-lg w-full">
         <TableHeader
           className={clsx(
             "md:[&>:first-child]:rounded-tl-lg",
@@ -56,13 +77,45 @@ export const ValidatorsTable = () => {
             "sticky -top-1 inset-x-0 z-[1]"
           )}
         >
-          <TableHead className="text-start max-w-[50vw] w-2/4">
-            Validator
+          <TableHead className="text-start max-w-[50vw] w-2/4 hover:bg-white/5">
+            <button
+              className="flex items-center gap-2 w-full before:absolute before:inset-0 before:content-['']"
+              onClick={() => handleSort("validator")}
+            >
+              <span>Validator</span>
+              <div>
+                {sortBy === "validator" && (
+                  <SortIcon className="w-4 h-4" direction={sortDirection} />
+                )}
+              </div>
+            </button>
           </TableHead>
-          <TableHead className="text-end w-1/4">
-            Avg. Orderbook Discrepancy
+          <TableHead
+            className="text-end w-1/4 hover:bg-white/5"
+            onClick={() => handleSort("averageMev")}
+          >
+            <button className="flex items-center justify-end gap-2 w-full before:absolute before:inset-0 before:content-['']">
+              <div>
+                {sortBy === "averageMev" && (
+                  <SortIcon className="w-4 h-4" direction={sortDirection} />
+                )}
+              </div>
+              <span>Avg. Orderbook Discrepancy</span>
+            </button>
           </TableHead>
-          <TableHead className="text-end w-1/4">Stake Weight</TableHead>
+          <TableHead className="text-end w-1/4 hover:bg-white/5">
+            <button
+              className="flex items-center justify-end gap-2 w-full before:absolute before:inset-0 before:content-['']"
+              onClick={() => handleSort("stake")}
+            >
+              <div>
+                {sortBy === "stake" && (
+                  <SortIcon className="w-4 h-4" direction={sortDirection} />
+                )}
+              </div>
+              <span>Stake Weight</span>
+            </button>
+          </TableHead>
         </TableHeader>
         <TableBody>
           {!validators &&
@@ -98,7 +151,7 @@ export const ValidatorsTable = () => {
                   <TableCell className="max-w-[50vw] w-2/4">
                     <Link
                       className={clsx(
-                        "text-[#6398FF] flex items-center gap-1 hover:underline relative",
+                        "text-blue-400 flex items-center gap-1 hover:underline relative",
                         "after:content-[''] after:absolute after:-inset-4"
                       )}
                       href={`/validators/${validator.pubkey}`}

@@ -5,7 +5,7 @@ export type CardProps = ComponentProps<"div">;
 
 const Card = ({ className, ...props }: CardProps) => {
   return (
-    <div {...props} className={clsx("bg-light-3 rounded-lg", className)} />
+    <div {...props} className={clsx("bg-light-30 rounded-lg", className)} />
   );
 };
 

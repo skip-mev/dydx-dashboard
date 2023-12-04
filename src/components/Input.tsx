@@ -17,7 +17,7 @@ export const Input: FC<InputProps> = ({
   return (
     <div className="block w-full relative">
       {LeadingIcon && (
-        <div className="absolute inset-y-0 px-3 flex items-center justify-center text-light-40">
+        <div className="absolute inset-y-0 px-3 flex items-center justify-center text-light-400">
           <LeadingIcon />
         </div>
       )}
