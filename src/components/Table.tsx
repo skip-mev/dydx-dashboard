@@ -32,7 +32,7 @@ export const TableHead = ({ className, ...props }: ComponentProps<"th">) => {
   return (
     <th
       className={clsx(
-        "text-sm text-white/70 font-normal",
+        "text-sm text-white/70 font-normal relative",
         "px-4 py-2 md:px-6 md:py-4",
         className
       )}
