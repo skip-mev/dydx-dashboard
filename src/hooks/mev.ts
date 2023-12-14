@@ -29,7 +29,7 @@ export function useRawMEVQuery<T = Datapoint[]>(args: UseRawMevQueryArgs<T>) {
       if (!proposer) return;
       return getRawMev({
         proposers: [proposer],
-        limit: 1000,
+        limit: 5000,
         withBlockInfo: withBlockInfo,
       });
     },
