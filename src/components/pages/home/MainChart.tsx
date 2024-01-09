@@ -1,4 +1,5 @@
 import CustomTooltip from "@/components/CustomTooltip";
+import { MAIN_CHART_DATA_MAX } from "@/constants";
 import { useMainChartData, useValidatorsWithStatsQuery } from "@/hooks";
 import { toggleSelectedMoniker, useHomeStore } from "@/store/home";
 import clsx from "clsx";
@@ -44,6 +45,13 @@ export const MainChart = () => {
     );
   }
 
+  const points = chartData
+  const lastPoint = points[points.length - 1]
+
+  const largestDatapoint = Math.max(...Object.entries(lastPoint).map(
+    ([key, value]) => key === "key" ? 0 : value
+  ), MAIN_CHART_DATA_MAX)
+
   return (
     <ResponsiveContainer className="overflow-hidden" height={300} width="100%">
       <LineChart data={chartData} margin={{ left: 16, right: 32 }}>
@@ -62,6 +70,7 @@ export const MainChart = () => {
         />
         <YAxis
           axisLine={false}
+          domain={[0, largestDatapoint <= MAIN_CHART_DATA_MAX ? MAIN_CHART_DATA_MAX : "auto"]}
           tickLine={false}
           padding={{ top: 20, bottom: 20 }}
           style={{
