@@ -9,7 +9,7 @@ import { getValidators } from "./validator";
  * Fetches the cumulative MEV data for all validators.
  */
 export async function getMainChartData(): Promise<MainChartData> {
-  const validators = await getValidators();
+  const validators = (await getValidators()).filter((validator) => validator.stake !== "0");
 
   const allData = await Promise.all(
     validators.map((validator) => {
