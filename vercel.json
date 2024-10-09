@@ -3,7 +3,7 @@
     { 
       "source": "*", 
       "destination": "https://observatory.zone/dydx/mev/blocks",
-      "permanent": true,
-    },
+      "permanent": true
+    }
   ]
 }
